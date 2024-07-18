@@ -88,7 +88,12 @@
             android:name=".view.main.ShortcutActivity"
             android:excludeFromRecents="true"
             android:exported="true" />
-        <activity android:name=".view.main.MainActivity">
+        <!--<activity android:name=".view.main.MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>-->
+        <activity android:name=".view.main.MyActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>

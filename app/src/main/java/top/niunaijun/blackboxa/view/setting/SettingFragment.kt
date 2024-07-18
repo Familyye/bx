@@ -2,10 +2,12 @@ package top.niunaijun.blackboxa.view.setting
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreferenceCompat
 import top.niunaijun.blackbox.BlackBoxCore
+import top.niunaijun.blackboxa.MyGlobalVar
 import top.niunaijun.blackboxa.R
 import top.niunaijun.blackboxa.app.AppManager
 import top.niunaijun.blackboxa.util.toast
@@ -43,14 +45,14 @@ class SettingFragment : PreferenceFragmentCompat() {
         }
         initGms()
 
-        invalidHideState{
+        invalidHideState {
             val xpHidePreference: Preference = (findPreference("xp_hide")!!)
             val hideXposed = AppManager.mBlackBoxLoader.hideXposed()
             xpHidePreference.setDefaultValue(hideXposed)
             xpHidePreference
         }
 
-        invalidHideState{
+        invalidHideState {
             val rootHidePreference: Preference = (findPreference("root_hide")!!)
             val hideRoot = AppManager.mBlackBoxLoader.hideRoot()
             rootHidePreference.setDefaultValue(hideRoot)

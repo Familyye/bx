@@ -1,6 +1,7 @@
 package top.niunaijun.blackboxa;
 
 import static top.niunaijun.blackboxa.MyGlobalVar.devMode;
+import static top.niunaijun.blackboxa.MyGlobalVar.preferences;
 import static top.niunaijun.blackboxa.MyGlobalVar.taskCount;
 import static top.niunaijun.blackboxa.node.AccUtils.isAccessibilityServiceOn;
 import static top.niunaijun.blackboxa.node.AccUtils.printLogMsg;
@@ -8,12 +9,14 @@ import static top.niunaijun.blackboxa.node.GlobalVariableHolder.context;
 import static top.niunaijun.blackboxa.node.GlobalVariableHolder.initDisplay;
 import static top.niunaijun.blackboxa.node.GlobalVariableHolder.isRunning;
 import static top.niunaijun.blackboxa.node.GlobalVariableHolder.mainActivity;
-import static top.niunaijun.blackboxa.node.GlobalVariableHolder.tag;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Build;
 import android.provider.Settings;
+import android.text.TextUtils;
 import android.util.Log;
+import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -25,10 +28,11 @@ import com.hjq.permissions.XXPermissions;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.List;
 
 import top.niunaijun.blackbox.BlackBoxCore;
+import top.niunaijun.blackboxa.app.AppManager;
+import top.niunaijun.blackboxa.node.AccUtils;
 import top.niunaijun.blackboxa.node.FloatingButton;
 import top.niunaijun.blackboxa.node.FloatingWindow;
 import top.niunaijun.blackboxa.node.GlobalVariableHolder;
@@ -36,19 +40,19 @@ import top.niunaijun.blackboxa.node.TaskBase;
 import top.niunaijun.blackboxa.node.UiObject;
 import top.niunaijun.blackboxa.node.okhttp3.HttpUtils;
 import top.niunaijun.blackboxa.node.utils.FileUtils;
-import top.niunaijun.blackboxa.view.main.MainActivity;
-import top.niunaijun.blackboxa.view.setting.SettingActivity;
+
 public class Jianjiao {
     static String ACTIONR = "com.jianjiao.duoduo.ACTIONR";
     static String userId = "18668561044";
     public static Thread thread = null;
     private static final String TAG = MyGlobalVar.TAG;
 
-    public static void init() throws IOException {//初始化配置
+    public static void init() {//初始化配置
         BlackBoxCore core = BlackBoxCore.get();
         if (devMode) {
             core.setXPEnable(true);
-            core.isHideRoot();
+            AppManager.getMBlackBoxLoader().invalidHideXposed(true);
+            AppManager.getMBlackBoxLoader().invalidHideRoot(true);
         } else {
             initDisplay();//初始化屏幕信息
             getFloatPermission();//初始化悬浮窗权限
@@ -70,7 +74,7 @@ public class Jianjiao {
             core.installXPModule("com.jianjiao.duoduo");
         }
         core.setModuleEnable("com.jianjiao.duoduo", true);
-        SettingActivity.start(mainActivity);
+        //SettingActivity.start(mainActivity);
     }
 
     public static boolean checkPermission(Activity activity) {
@@ -84,6 +88,11 @@ public class Jianjiao {
         MyGlobalVar.isWait = false;
         taskCount = 0;
         TaskBase taskBase = new TaskBase();
+        userId = preferences.getString("userId", "18668561044");
+        int fkWait = Integer.parseInt(preferences.getString("fkWait", "10"));
+        int taskWait = Integer.parseInt(preferences.getString("taskWait", "20"));
+
+
         thread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -98,11 +107,12 @@ public class Jianjiao {
                 }*/
 //                isRunning = false;
                 try {
+                    mainTask:
                     while (isRunning) {
                         if (MyGlobalVar.isWait) {
                             //暂停五分钟
-                            printLogMsg("暂停中5分钟");
-                            Thread.sleep(1000 * 60 * 5);
+                            printLogMsg("暂停中" + fkWait + "分钟");
+                            Thread.sleep(1000 * 60 * fkWait);
                             MyGlobalVar.isWait = false;
                         }
                         if (taskBase._activityName().contains("com.xunmeng.pinduoduo")) {
@@ -172,7 +182,7 @@ public class Jianjiao {
                                                     taskCount++;
                                                 }
                                                 printLogMsg("当前数量：" + taskCount);
-                                                taskBase._sleep(5000);
+                                                taskBase._sleep(taskWait * 1000);
                                             } else {
                                                 printLogMsg("任务失败,任务id不匹配:" + tmpGoodsId + "|" + goodsId + "_" + "|" + goodsId.length() + "|" + tmpGoodsId.length());
                                             }
@@ -182,14 +192,20 @@ public class Jianjiao {
                                             printLogMsg("json解析错误:" + e.toString());
                                             jixu = false;
                                             MyGlobalVar.isWait = true;
-                                            continue;
+                                            continue mainTask;
                                         }
-                                    } else if (taskBase._text("手机网络有问题").findOne() != null) {
-                                        printLogMsg("手机网络有问题,账号风控");
-                                        MyGlobalVar.intent = null;
-                                        jixu = false;
-                                        MyGlobalVar.isWait = true;
-                                        break;
+                                    }
+                                    else if (taskBase._text("手机网络有问题").findOne() != null) {
+                                        UiObject back = taskBase._text("手机网络有问题").findOne();
+                                        if (back != null && back.bounds() != null) {
+                                            //保存界面信息
+                                            Log.d(TAG, "保存xml: " + FileUtils.writeFile("/sdcard/b.xml", back.bounds().toString()));
+                                            printLogMsg("手机网络有问题,账号风控");
+                                            MyGlobalVar.intent = null;
+                                            jixu = false;
+                                            MyGlobalVar.isWait = true;
+                                            break;
+                                        }
                                     }
                                     Thread.sleep(1000);
                                 }
@@ -225,13 +241,16 @@ public class Jianjiao {
         thread.start();
     }
 
-
     public static void getStoragePermission() {
         // 获取权限
         XXPermissions.with(mainActivity)
                 //申请单个权限
                 .permission(Permission.MANAGE_EXTERNAL_STORAGE)
                 //申请多个权限
+                //.permission(Permission.READ_EXTERNAL_STORAGE)
+                //.permission(Permission.WRITE_EXTERNAL_STORAGE)
+
+
                 //.permission(Permission.READ_MEDIA_IMAGES)
                 //.permission(Permission.READ_MEDIA_VIDEO)
                 //.permission(Permission.READ_MEDIA_AUDIO)
@@ -246,13 +265,6 @@ public class Jianjiao {
 //                        String config = FileUtils.readFile("/sdcard/fatjs/aaa.js");
                         //FileUtils.writeToTxt("/sdcard/fatjs/config.json", configString);
                         printLogMsg("权限通过", 0);
-                        Log.d(tag, "写入文件: " + FileUtils.writeFile("/sdcard/aaa.js", "showLog();\n" +
-                                "print('尖叫111');\n" +
-                                "sleep(1000);\n" +
-                                "openPkName('com.xunmeng.pinduoduo')\n" +
-                                "sleep(1000);\n" +
-                                "var sendButton = text(\"请使用其它方式登录\").findOne();\n" +
-                                "sendButton.click();\n"));
                     }
 
                     @Override
@@ -307,6 +319,7 @@ public class Jianjiao {
                         context.startService(new Intent(GlobalVariableHolder.context, FloatingWindow.class));
                         // 打开悬浮窗
                         context.startService(new Intent(GlobalVariableHolder.context, FloatingButton.class));
+
                     }
 
                     @Override

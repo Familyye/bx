@@ -21,7 +21,10 @@ class WelcomeActivity : AppCompatActivity() {
     }
 
     private fun jump() {
-        MainActivity.start(this)
+        //MainActivity.start(this)
+        //startActivity(Intent(this,MyActivity::class.java))
+        //MyActivity.start(this)
+        startActivity(Intent(this,MyActivity::class.java))
         finish()
     }
 
