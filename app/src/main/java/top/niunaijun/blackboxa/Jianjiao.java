@@ -221,6 +221,8 @@ public class Jianjiao {
                             }
                         } else {
                             taskBase._print("不在拼多多界面:" + taskBase._activityName());
+                            BlackBoxCore.get().stopPackage("com.xunmeng.pinduoduo",0);
+                            taskBase._sleep(2000);
                             BlackBoxCore.get().launchApk("com.xunmeng.pinduoduo", 0);
                             taskBase._sleep(3000);
                             taskBase._desc("聊天").findOne().click();

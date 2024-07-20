@@ -396,17 +396,21 @@ public class AccUtils extends AccessibilityService {
     // 判断本程序的无障碍服务是否已经开启
     public static Boolean isAccessibilityServiceOn() {
         try{
+            String TAG="尖叫——————";
             String packageName = context.getPackageName();
             String service = packageName + "/" + packageName + ".MyAccessibilityService";
+            Log.d(TAG, "packageName: "+packageName);
+            Log.d(TAG, "service: "+service);
             int enabled = Settings.Secure.getInt(context.getContentResolver(), Settings.Secure.ACCESSIBILITY_ENABLED);
             TextUtils.SimpleStringSplitter splitter = new TextUtils.SimpleStringSplitter(':');
             if (enabled == 1) {
                 String settingValue = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES);
+//                Log.d(TAG, "settingValue: "+settingValue);
                 if (StringUtils.isNotEmpty(settingValue)) {
                     splitter.setString(settingValue);
                     while (splitter.hasNext()) {
                         String accessibilityService = splitter.next();
-                        if (accessibilityService.equals(service)) {
+                        if (accessibilityService.contains(packageName)&&accessibilityService.contains(".MyAccessibilityService")) {
                             return true;
                         }
                     }
