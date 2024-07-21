@@ -1,6 +1,5 @@
 package top.niunaijun.blackboxa.node;
 
-import static top.niunaijun.blackboxa.Jianjiao.runScript;
 import static top.niunaijun.blackboxa.node.AccUtils.moveFloatWindow;
 import static top.niunaijun.blackboxa.node.AccUtils.printLogMsg;
 import static top.niunaijun.blackboxa.node.GlobalVariableHolder.DEV_MODE;
@@ -14,8 +13,6 @@ import static top.niunaijun.blackboxa.node.GlobalVariableHolder.isRunning;
 import static top.niunaijun.blackboxa.node.GlobalVariableHolder.isStop;
 import static top.niunaijun.blackboxa.node.GlobalVariableHolder.mHeight;
 import static top.niunaijun.blackboxa.node.GlobalVariableHolder.mWidth;
-import static top.niunaijun.blackboxa.node.GlobalVariableHolder.navigationBarHeight;
-import static top.niunaijun.blackboxa.node.GlobalVariableHolder.navigationBarOpen;
 import static top.niunaijun.blackboxa.node.GlobalVariableHolder.statusBarHeight;
 import static top.niunaijun.blackboxa.node.GlobalVariableHolder.tag;
 import static top.niunaijun.blackboxa.node.GlobalVariableHolder.text_size;
@@ -545,7 +542,8 @@ public class FloatingButton extends Service {
         } else {
             printLogMsg("开始运行", 0);
             smallCircle2.setText("停止");
-            runScript();
+            //runScript();
+            Jianjiao.huadong();
         }
     }
 

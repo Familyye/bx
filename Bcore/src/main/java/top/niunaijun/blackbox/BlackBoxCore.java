@@ -209,6 +209,15 @@ public class BlackBoxCore extends ClientConfiguration {
         return true;
     }
 
+    public boolean launchPddVideo(String packageName, int userId) {
+        Intent launchIntentForPackage = getBPackageManager().getpddIntent(packageName, userId);
+        if (launchIntentForPackage == null) {
+            return false;
+        }
+        startActivity(launchIntentForPackage, userId);
+        return true;
+    }
+
     public boolean isInstalled(String packageName, int userId) {
         return getBPackageManager().isInstalled(packageName, userId);
     }

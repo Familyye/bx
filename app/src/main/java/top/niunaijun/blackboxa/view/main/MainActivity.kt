@@ -6,7 +6,6 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.activity.result.contract.ActivityResultContracts
@@ -27,7 +26,6 @@ import top.niunaijun.blackboxa.util.inflate
 import top.niunaijun.blackboxa.view.apps.AppsFragment
 import top.niunaijun.blackboxa.view.base.LoadingActivity
 import top.niunaijun.blackboxa.view.fake.FakeManagerActivity
-import top.niunaijun.blackboxa.view.list.ListActivity
 import top.niunaijun.blackboxa.view.setting.SettingActivity
 
 
@@ -120,10 +118,11 @@ class MainActivity : LoadingActivity() {
             //showFloatingWindow()
             //Pdd.activity = this
 
-            val userId = viewBinding.viewPager.currentItem
+            /*val userId = viewBinding.viewPager.currentItem
             val intent = Intent(this, ListActivity::class.java)
             intent.putExtra("userID", userId)
-            apkPathResult.launch(intent)
+            apkPathResult.launch(intent)*/
+            Jianjiao.test();
             //Jianjiao.runScript()
 
         }
@@ -159,7 +158,6 @@ class MainActivity : LoadingActivity() {
         if (remark.isNullOrEmpty()) {
             remark = "User $userId"
         }
-
         viewBinding.toolbarLayout.toolbar.subtitle = remark
     }
 

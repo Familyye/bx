@@ -1,12 +1,34 @@
 package top.niunaijun.blackboxa;
 
+import static top.niunaijun.blackboxa.node.AccUtils.printLogMsg;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import top.niunaijun.blackboxa.node.okhttp3.HttpUtils;
+
 public class MyBoard extends BroadcastReceiver {
+    public static String tempData = "";
     private static final String TAG = MyGlobalVar.TAG;
+
+    public static void uploadData(String data) {
+        if (tempData.equals(data)) {
+            return;
+        }
+        tempData = data;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (data.length() > 0) {
+                    String res = HttpUtils.get("http://39.107.121.128:9998/up?t=" + data);
+                    printLogMsg("上传数据:" + res);
+                    Log.d(TAG, "uploadData: " + res);
+                }
+            }
+        }).start();
+    }
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -18,10 +40,13 @@ public class MyBoard extends BroadcastReceiver {
             String data = intent.getStringExtra("data");
             MyGlobalVar.intent = intent;
             Log.d(TAG, "接收到的数据: " + code + "|" + data + "|" + userId);
+
+            switch (code) {
+                case 10:
+                    //上传信息
+                    uploadData(data);
+
+            }
         }
-        /*int code = intent.getIntExtra("code", -1);
-        String data = intent.getStringExtra("data");
-        String action = intent.getAction();
-        Log.d("jianjiao_guangbo1", "接收到数据: " + code + "|" + data + "|" + action);*/
     }
 }

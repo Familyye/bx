@@ -1,6 +1,5 @@
 package top.niunaijun.blackboxa;
 
-import static top.niunaijun.blackboxa.MyGlobalVar.devMode;
 import static top.niunaijun.blackboxa.MyGlobalVar.preferences;
 import static top.niunaijun.blackboxa.MyGlobalVar.taskCount;
 import static top.niunaijun.blackboxa.node.AccUtils.isAccessibilityServiceOn;
@@ -11,12 +10,11 @@ import static top.niunaijun.blackboxa.node.GlobalVariableHolder.isRunning;
 import static top.niunaijun.blackboxa.node.GlobalVariableHolder.mainActivity;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Intent;
-import android.os.Build;
+import android.content.IntentFilter;
 import android.provider.Settings;
-import android.text.TextUtils;
 import android.util.Log;
-import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -28,11 +26,11 @@ import com.hjq.permissions.XXPermissions;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.List;
 
 import top.niunaijun.blackbox.BlackBoxCore;
 import top.niunaijun.blackboxa.app.AppManager;
-import top.niunaijun.blackboxa.node.AccUtils;
 import top.niunaijun.blackboxa.node.FloatingButton;
 import top.niunaijun.blackboxa.node.FloatingWindow;
 import top.niunaijun.blackboxa.node.GlobalVariableHolder;
@@ -46,32 +44,42 @@ public class Jianjiao {
     static String userId = "18668561044";
     public static Thread thread = null;
     private static final String TAG = MyGlobalVar.TAG;
+    private static BroadcastReceiver mReceiver;
 
     public static void init() {//初始化配置
         BlackBoxCore core = BlackBoxCore.get();
-        if (devMode) {
-            core.setXPEnable(true);
-            AppManager.getMBlackBoxLoader().invalidHideXposed(true);
-            AppManager.getMBlackBoxLoader().invalidHideRoot(true);
-        } else {
-            initDisplay();//初始化屏幕信息
-            getFloatPermission();//初始化悬浮窗权限
-            //初始化无障碍服务
-            if (!isAccessibilityServiceOn()) {
-                printLogMsg("请开启无障碍服务", 0);
-                Toast.makeText(context, "请开启无障碍服务", Toast.LENGTH_SHORT).show();
-                mainActivity.startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
-            }
 
+        mReceiver = new MyBoard();
+        // 创建IntentFilter并添加action
+        IntentFilter filter = new IntentFilter("com.jianjiao.test.PDDGUANGBO");
+        // 注册BroadcastReceiver
+        context.registerReceiver(mReceiver, filter);
+
+        core.setXPEnable(true);
+        AppManager.getMBlackBoxLoader().invalidHideXposed(true);
+        AppManager.getMBlackBoxLoader().invalidHideRoot(true);
+        initDisplay();//初始化屏幕信息
+        getFloatPermission();//初始化悬浮窗权限
+        //初始化无障碍服务
+        if (!isAccessibilityServiceOn()) {
+            printLogMsg("请开启无障碍服务", 0);
+            Toast.makeText(context, "请开启无障碍服务", Toast.LENGTH_SHORT).show();
+            mainActivity.startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
         }
         //初始化拼多多
         if (!core.isInstalled("com.xunmeng.pinduoduo", 0)) {
-            core.installPackageAsUser("com.xunmeng.pinduoduo", 0);
+            //core.installPackageAsUser("com.xunmeng.pinduoduo", 0);
+            File duoduo = FileUtils.getApkFileFromAssets("duoduo.apk");
+            core.installPackageAsUser(duoduo, 0);
         }
 
         //初始化xposed模块
         if (!core.isInstalledXposedModule("com.jianjiao.duoduo")) {
-            core.installXPModule("com.jianjiao.duoduo");
+            //core.installXPModule("com.jianjiao.duoduo");
+            File xpmodule = FileUtils.getApkFileFromAssets("xpmodule.apk");
+            core.installXPModule(xpmodule);
+
+
         }
         core.setModuleEnable("com.jianjiao.duoduo", true);
         //SettingActivity.start(mainActivity);
@@ -81,6 +89,9 @@ public class Jianjiao {
         return Settings.canDrawOverlays(activity);
     }
 
+    public static void test() {
+        BlackBoxCore.get().launchPddVideo("com.xunmeng.pinduoduo", 0);
+    }
 
     public static void runScript() {
         Log.d(TAG, "run: 开始运行");
@@ -91,8 +102,6 @@ public class Jianjiao {
         userId = preferences.getString("userId", "18668561044");
         int fkWait = Integer.parseInt(preferences.getString("fkWait", "10"));
         int taskWait = Integer.parseInt(preferences.getString("taskWait", "20"));
-
-
         thread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -194,8 +203,7 @@ public class Jianjiao {
                                             MyGlobalVar.isWait = true;
                                             continue mainTask;
                                         }
-                                    }
-                                    else if (taskBase._text("手机网络有问题").findOne() != null) {
+                                    } else if (taskBase._text("手机网络有问题").findOne() != null) {
                                         UiObject back = taskBase._text("手机网络有问题").findOne();
                                         if (back != null && back.bounds() != null) {
                                             //保存界面信息
@@ -221,7 +229,7 @@ public class Jianjiao {
                             }
                         } else {
                             taskBase._print("不在拼多多界面:" + taskBase._activityName());
-                            BlackBoxCore.get().stopPackage("com.xunmeng.pinduoduo",0);
+                            BlackBoxCore.get().stopPackage("com.xunmeng.pinduoduo", 0);
                             taskBase._sleep(2000);
                             BlackBoxCore.get().launchApk("com.xunmeng.pinduoduo", 0);
                             taskBase._sleep(3000);
@@ -231,6 +239,39 @@ public class Jianjiao {
                         }
                     }
                     isRunning = false;
+                    printLogMsg("任务已结束");
+                } catch (InterruptedException e) {
+                    System.out.println("在沉睡中被停止！进入catch，线程的是否处于停止状态：" + Jianjiao.thread.isInterrupted());
+                    e.printStackTrace();
+                    isRunning = false;
+                    printLogMsg("任务已结束");
+                }
+            }
+        });
+        thread.start();
+    }
+
+
+    public static void huadong() {
+        Log.d(TAG, "run: 开始运行");
+        isRunning = true;
+        //MyGlobalVar.isWait = false;
+        TaskBase taskBase = new TaskBase();
+        thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    while (isRunning) {
+                        //生成200-300的随机数
+                        int sx = (int) (taskBase._width * 0.3 + (int) (Math.random() * (taskBase._width * 0.7)));
+                        int sy = (int) (taskBase._height * 0.7 + (int) (Math.random() * (taskBase._height * 0.9)));
+                        int ex = (int) (taskBase._width * 0.3 + (int) (Math.random() * (taskBase._width * 0.7)));
+                        int ey = (int) (taskBase._width * 0.1 + (int) (Math.random() * (taskBase._width * 0.3)));
+                        Log.d(TAG, "滑动坐标为: " + sx + "|" + sy + "|" + ex + "|" + ey);
+                        printLogMsg("滑动：" + sx + "|" + sy + "|" + ex + "|" + ey);
+                        taskBase._swipe(sx, sy, ex, ey, 1000);
+                        Thread.sleep(2000);
+                    }
                     printLogMsg("任务已结束");
                 } catch (InterruptedException e) {
                     System.out.println("在沉睡中被停止！进入catch，线程的是否处于停止状态：" + Jianjiao.thread.isInterrupted());
