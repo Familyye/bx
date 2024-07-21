@@ -20,7 +20,8 @@ public class HackAppUtils {
     }
 
     public static void startInject(Activity activity, ClassLoader classLoader) {
-        String className = activity.getClass().getName();
+
+        /*String className = activity.getClass().getName();
         String time= System.currentTimeMillis()+"";
         Log.d(TAG+"|"+time, "加载类：" + className);
         if (className.contains("com.xunmeng.pinduoduo")) {
@@ -42,6 +43,6 @@ public class HackAppUtils {
             }else{
                 Log.d(TAG, "不是login");
             }
-        }
+        }*/
     }
 }

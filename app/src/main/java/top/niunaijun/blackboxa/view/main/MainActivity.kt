@@ -117,14 +117,13 @@ class MainActivity : LoadingActivity() {
 
     private fun initFab() {
         viewBinding.fab.setOnClickListener {
-            //showFloatingWindow()
-            //Pdd.activity = this
-
-            val userId = viewBinding.viewPager.currentItem
+            /*val userId = viewBinding.viewPager.currentItem
             val intent = Intent(this, ListActivity::class.java)
             intent.putExtra("userID", userId)
-            apkPathResult.launch(intent)
-            //Jianjiao.runScript()
+            apkPathResult.launch(intent)*/
+
+
+            Jianjiao.test()
 
         }
     }

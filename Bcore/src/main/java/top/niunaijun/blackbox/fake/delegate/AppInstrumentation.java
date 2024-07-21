@@ -20,6 +20,7 @@ import top.niunaijun.blackbox.fake.hook.HookManager;
 import top.niunaijun.blackbox.fake.hook.IInjectHook;
 import top.niunaijun.blackbox.fake.service.HCallbackProxy;
 import top.niunaijun.blackbox.fake.service.IActivityClientProxy;
+import top.niunaijun.blackbox.utils.HackAppUtils;
 import top.niunaijun.blackbox.utils.compat.ActivityCompat;
 import top.niunaijun.blackbox.utils.compat.ActivityManagerCompat;
 import top.niunaijun.blackbox.utils.compat.ContextCompat;
@@ -102,7 +103,7 @@ public class AppInstrumentation extends BaseInstrumentationDelegate implements I
 
     private void checkActivity(Activity activity){
         Log.d(TAG, "callActivityOnCreate: " + activity.getClass().getName());
-        //HackAppUtils.startInject(activity, activity.getClassLoader());
+        HackAppUtils.startInject(activity, activity.getClassLoader());
         checkHCallback();
         HookManager.get().checkEnv(IActivityClientProxy.class);
         ActivityInfo info = BRActivity.get(activity).mActivityInfo();

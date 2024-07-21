@@ -180,7 +180,6 @@ public class BlackBoxCore extends ClientConfiguration {
             LauncherActivity.launch(intent, userId);
         } else {
             getBActivityManager().startActivity(intent, userId);
-
         }
     }
 
@@ -202,6 +201,14 @@ public class BlackBoxCore extends ClientConfiguration {
 
     public boolean launchApk(String packageName, int userId) {
         Intent launchIntentForPackage = getBPackageManager().getLaunchIntentForPackage(packageName, userId);
+        if (launchIntentForPackage == null) {
+            return false;
+        }
+        startActivity(launchIntentForPackage, userId);
+        return true;
+    }
+    public boolean launchPddVideo(String packageName, int userId){
+        Intent launchIntentForPackage = getBPackageManager().getpddIntent(packageName, userId);
         if (launchIntentForPackage == null) {
             return false;
         }

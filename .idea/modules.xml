@@ -4,7 +4,6 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/Bcore/BlackBox.Bcore.main.iml" filepath="$PROJECT_DIR$/.idea/modules/Bcore/BlackBox.Bcore.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/Bcore/pine-core/BlackBox.Bcore.pine-core.main.iml" filepath="$PROJECT_DIR$/.idea/modules/Bcore/pine-core/BlackBox.Bcore.pine-core.main.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/BlackBox.app.main.iml" filepath="$PROJECT_DIR$/.idea/modules/app/BlackBox.app.main.iml" />
     </modules>
   </component>
 </project>

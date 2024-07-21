@@ -12,11 +12,9 @@ import static top.niunaijun.blackboxa.node.GlobalVariableHolder.mainActivity;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Build;
+import android.net.Uri;
 import android.provider.Settings;
-import android.text.TextUtils;
 import android.util.Log;
-import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -31,8 +29,8 @@ import org.json.JSONObject;
 import java.util.List;
 
 import top.niunaijun.blackbox.BlackBoxCore;
+import top.niunaijun.blackbox.fake.service.ActivityManagerCommonProxy;
 import top.niunaijun.blackboxa.app.AppManager;
-import top.niunaijun.blackboxa.node.AccUtils;
 import top.niunaijun.blackboxa.node.FloatingButton;
 import top.niunaijun.blackboxa.node.FloatingWindow;
 import top.niunaijun.blackboxa.node.GlobalVariableHolder;
@@ -75,6 +73,11 @@ public class Jianjiao {
         }
         core.setModuleEnable("com.jianjiao.duoduo", true);
         //SettingActivity.start(mainActivity);
+    }
+
+
+    public static void test() {
+        BlackBoxCore.get().launchPddVideo("com.xunmeng.pinduoduo",0);
     }
 
     public static boolean checkPermission(Activity activity) {
@@ -194,8 +197,7 @@ public class Jianjiao {
                                             MyGlobalVar.isWait = true;
                                             continue mainTask;
                                         }
-                                    }
-                                    else if (taskBase._text("手机网络有问题").findOne() != null) {
+                                    } else if (taskBase._text("手机网络有问题").findOne() != null) {
                                         UiObject back = taskBase._text("手机网络有问题").findOne();
                                         if (back != null && back.bounds() != null) {
                                             //保存界面信息
@@ -221,7 +223,7 @@ public class Jianjiao {
                             }
                         } else {
                             taskBase._print("不在拼多多界面:" + taskBase._activityName());
-                            BlackBoxCore.get().stopPackage("com.xunmeng.pinduoduo",0);
+                            BlackBoxCore.get().stopPackage("com.xunmeng.pinduoduo", 0);
                             taskBase._sleep(2000);
                             BlackBoxCore.get().launchApk("com.xunmeng.pinduoduo", 0);
                             taskBase._sleep(3000);

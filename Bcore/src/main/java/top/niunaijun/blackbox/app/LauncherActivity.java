@@ -45,7 +45,6 @@ public class LauncherActivity extends Activity {
         Intent launchIntent = intent.getParcelableExtra(KEY_INTENT);
         String packageName = intent.getStringExtra(KEY_PKG);
         int userId = intent.getIntExtra(KEY_USER_ID, 0);
-
         PackageInfo packageInfo = BlackBoxCore.getBPackageManager().getPackageInfo(packageName, 0, userId);
         if (packageInfo == null) {
             Slog.e(TAG, packageName + " not installed!");
