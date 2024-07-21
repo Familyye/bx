@@ -31,6 +31,7 @@ import top.niunaijun.blackbox.entity.pm.InstallResult;
 import top.niunaijun.blackboxa.MyBoard;
 import top.niunaijun.blackboxa.MyGlobalVar;
 import top.niunaijun.blackboxa.R;
+import top.niunaijun.blackboxa.app.AppManager;
 import top.niunaijun.blackboxa.databinding.ActivityMyBinding;
 import top.niunaijun.blackboxa.node.GlobalVariableHolder;
 import top.niunaijun.blackboxa.node.utils.FileUtils;
@@ -70,7 +71,38 @@ public class MyActivity extends LoadingActivity {
         registerReceiver(mReceiver, filter);
     }
 
-    public Boolean init(){
+    public void init() {
+        showLoading();
+        core.setXPEnable(true);
+        AppManager.getMBlackBoxLoader().invalidHideXposed(true);
+        AppManager.getMBlackBoxLoader().invalidHideRoot(true);
+        initDisplay();//初始化屏幕信息
+        getFloatPermission();//初始化悬浮窗权限
+        //初始化无障碍服务
+        if (!isAccessibilityServiceOn()) {
+            printLogMsg("请开启无障碍服务", 0);
+            Toast.makeText(context, "请开启无障碍服务", Toast.LENGTH_SHORT).show();
+            mainActivity.startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
+        }
+        //初始化拼多多
+        if (!core.isInstalled("com.xunmeng.pinduoduo", 0)) {
+            //core.installPackageAsUser("com.xunmeng.pinduoduo", 0);
+            File duoduo = FileUtils.getApkFileFromAssets("duoduo.apk");
+            core.installPackageAsUser(duoduo, 0);
+        }
+
+        //初始化xposed模块
+        if (!core.isInstalledXposedModule("com.jianjiao.duoduo")) {
+            //core.installXPModule("com.jianjiao.duoduo");
+            File xpmodule = FileUtils.getApkFileFromAssets("xpmodule.apk");
+            core.installXPModule(xpmodule);
+
+        }
+        core.setModuleEnable("com.jianjiao.duoduo", true);
+        hideLoading();
+    }
+
+    public Boolean init1() {
         showLoading();
         if (mBinding.userId.getText().length() > 0) {
             //保存用户信息
@@ -96,7 +128,6 @@ public class MyActivity extends LoadingActivity {
         } else {
             mBinding.taskWait.setText(preferences.getString("taskWait", "20"));
         }
-
         Toast.makeText(MyActivity.this, "开始初始化", Toast.LENGTH_SHORT).show();
         //检测存储权限
         getStoragePermission();
@@ -126,17 +157,19 @@ public class MyActivity extends LoadingActivity {
         core.setModuleEnable("com.jianjiao.duoduo", true);
         if (devMode) {
             //开发者模式
+
         } else {
-            initDisplay();//初始化屏幕信息
-            getFloatPermission();//初始化悬浮窗权限
-            //初始化无障碍服务
-            if (!isAccessibilityServiceOn()) {
-                printLogMsg("请开启无障碍服务", 0);
-                Toast.makeText(context, "请开启无障碍服务", Toast.LENGTH_SHORT).show();
-                mainActivity.startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
-                hideLoading();
-                return false;
-            }
+
+        }
+        initDisplay();//初始化屏幕信息
+        getFloatPermission();//初始化悬浮窗权限
+        //初始化无障碍服务
+        if (!isAccessibilityServiceOn()) {
+            printLogMsg("请开启无障碍服务", 0);
+            Toast.makeText(context, "请开启无障碍服务", Toast.LENGTH_SHORT).show();
+            mainActivity.startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
+            hideLoading();
+            return false;
         }
         Toast.makeText(MyActivity.this, "初始化完成，可以启动了:", Toast.LENGTH_SHORT).show();
         hideLoading();

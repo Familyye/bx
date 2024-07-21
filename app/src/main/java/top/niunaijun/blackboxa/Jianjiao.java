@@ -1,21 +1,18 @@
 package top.niunaijun.blackboxa;
 
+import static top.niunaijun.blackboxa.MyGlobalVar.devMode;
 import static top.niunaijun.blackboxa.MyGlobalVar.preferences;
 import static top.niunaijun.blackboxa.MyGlobalVar.taskCount;
-import static top.niunaijun.blackboxa.node.AccUtils.isAccessibilityServiceOn;
 import static top.niunaijun.blackboxa.node.AccUtils.printLogMsg;
 import static top.niunaijun.blackboxa.node.GlobalVariableHolder.context;
-import static top.niunaijun.blackboxa.node.GlobalVariableHolder.initDisplay;
 import static top.niunaijun.blackboxa.node.GlobalVariableHolder.isRunning;
 import static top.niunaijun.blackboxa.node.GlobalVariableHolder.mainActivity;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.provider.Settings;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -26,11 +23,9 @@ import com.hjq.permissions.XXPermissions;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
 import java.util.List;
 
 import top.niunaijun.blackbox.BlackBoxCore;
-import top.niunaijun.blackboxa.app.AppManager;
 import top.niunaijun.blackboxa.node.FloatingButton;
 import top.niunaijun.blackboxa.node.FloatingWindow;
 import top.niunaijun.blackboxa.node.GlobalVariableHolder;
@@ -38,6 +33,7 @@ import top.niunaijun.blackboxa.node.TaskBase;
 import top.niunaijun.blackboxa.node.UiObject;
 import top.niunaijun.blackboxa.node.okhttp3.HttpUtils;
 import top.niunaijun.blackboxa.node.utils.FileUtils;
+import top.niunaijun.blackboxa.view.main.MyActivity;
 
 public class Jianjiao {
     static String ACTIONR = "com.jianjiao.duoduo.ACTIONR";
@@ -47,14 +43,18 @@ public class Jianjiao {
     private static BroadcastReceiver mReceiver;
 
     public static void init() {//初始化配置
-        BlackBoxCore core = BlackBoxCore.get();
-
+        Intent intent = new Intent(context, MyActivity.class);
+        context.startActivity(intent);
+        if (!devMode) {
+            //非开发者模式下，关闭主页面
+            mainActivity.finish();
+        }
+        /*BlackBoxCore core = BlackBoxCore.get();
         mReceiver = new MyBoard();
         // 创建IntentFilter并添加action
         IntentFilter filter = new IntentFilter("com.jianjiao.test.PDDGUANGBO");
         // 注册BroadcastReceiver
         context.registerReceiver(mReceiver, filter);
-
         core.setXPEnable(true);
         AppManager.getMBlackBoxLoader().invalidHideXposed(true);
         AppManager.getMBlackBoxLoader().invalidHideRoot(true);
@@ -78,11 +78,9 @@ public class Jianjiao {
             //core.installXPModule("com.jianjiao.duoduo");
             File xpmodule = FileUtils.getApkFileFromAssets("xpmodule.apk");
             core.installXPModule(xpmodule);
-
-
         }
         core.setModuleEnable("com.jianjiao.duoduo", true);
-        //SettingActivity.start(mainActivity);
+        //SettingActivity.start(mainActivity);*/
     }
 
     public static boolean checkPermission(Activity activity) {
