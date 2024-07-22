@@ -3,17 +3,11 @@ package top.niunaijun.blackboxa.view.main
 import android.app.Activity
 import android.app.Application
 import android.content.Context
-import android.content.Intent
-import android.util.Log
 import top.niunaijun.blackbox.BlackBoxCore
-import top.niunaijun.blackbox.app.BActivityThread
 import top.niunaijun.blackbox.app.configuration.AppLifecycleCallback
 import top.niunaijun.blackbox.app.configuration.ClientConfiguration
-import top.niunaijun.blackboxa.Const
 import top.niunaijun.blackboxa.app.App
 import top.niunaijun.blackboxa.biz.cache.AppSharedPreferenceDelegate
-import top.niunaijun.blackboxa.node.GlobalVariableHolder
-import top.niunaijun.blackboxa.util.toast
 import java.io.File
 
 

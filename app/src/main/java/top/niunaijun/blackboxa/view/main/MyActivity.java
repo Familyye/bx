@@ -13,7 +13,6 @@ import static top.niunaijun.blackboxa.node.GlobalVariableHolder.mainActivity;
 import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
@@ -54,12 +53,13 @@ public class MyActivity extends LoadingActivity {
         setContentView(mBinding.getRoot());
         mBinding.init.setOnClickListener(v -> init());
         mBinding.start.setOnClickListener(v -> start());
+        mBinding.openVideo.setOnClickListener(v -> openVideo());
         mBinding.resetApp.setOnClickListener(v -> {
             core.clearPackage("com.xunmeng.pinduoduo", 0);
         });
-        mBinding.userId.setText(preferences.getString("userId", "18668561044"));
+        /*mBinding.userId.setText(preferences.getString("userId", "18668561044"));
         mBinding.fkWait.setText(preferences.getString("fkWait", "10"));
-        mBinding.taskWait.setText(preferences.getString("taskWait", "20"));
+        mBinding.taskWait.setText(preferences.getString("taskWait", "20"));*/
 
         //全局初始化
         GlobalVariableHolder.context = this;
@@ -70,6 +70,7 @@ public class MyActivity extends LoadingActivity {
         // 注册BroadcastReceiver
         registerReceiver(mReceiver, filter);
     }
+
 
     public void init() {
         showLoading();
@@ -100,11 +101,12 @@ public class MyActivity extends LoadingActivity {
         }
         core.setModuleEnable("com.jianjiao.duoduo", true);
         hideLoading();
+        Toast.makeText(this, "初始化完成，可以启动了:", Toast.LENGTH_SHORT).show();
     }
 
     public Boolean init1() {
         showLoading();
-        if (mBinding.userId.getText().length() > 0) {
+        /*if (mBinding.userId.getText().length() > 0) {
             //保存用户信息
             SharedPreferences.Editor editor = preferences.edit();
             editor.putString("userId", mBinding.userId.getText().toString());
@@ -127,7 +129,7 @@ public class MyActivity extends LoadingActivity {
             editor.apply();
         } else {
             mBinding.taskWait.setText(preferences.getString("taskWait", "20"));
-        }
+        }*/
         Toast.makeText(MyActivity.this, "开始初始化", Toast.LENGTH_SHORT).show();
         //检测存储权限
         getStoragePermission();
@@ -184,6 +186,10 @@ public class MyActivity extends LoadingActivity {
         }
     }
 
+    private void openVideo() {
+        core.launchPddVideo("com.xunmeng.pinduoduo", 0);
+    }
+
     @Override
     protected void onRestart() {
         super.onDestroy();
@@ -194,8 +200,9 @@ public class MyActivity extends LoadingActivity {
             Toast.makeText(context, "请开启无障碍服务", Toast.LENGTH_SHORT).show();
             mainActivity.startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
         }
-        if(XXPermissions.isGranted(context, Permission.SYSTEM_ALERT_WINDOW)){
+        if (XXPermissions.isGranted(context, Permission.SYSTEM_ALERT_WINDOW)) {
             getFloatPermission();
-        };
+        }
+        ;
     }
 }
