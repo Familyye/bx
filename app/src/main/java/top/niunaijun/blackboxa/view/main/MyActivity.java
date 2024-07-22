@@ -2,7 +2,6 @@ package top.niunaijun.blackboxa.view.main;
 
 import static top.niunaijun.blackboxa.Jianjiao.getFloatPermission;
 import static top.niunaijun.blackboxa.Jianjiao.getStoragePermission;
-import static top.niunaijun.blackboxa.MyGlobalVar.devMode;
 import static top.niunaijun.blackboxa.MyGlobalVar.preferences;
 import static top.niunaijun.blackboxa.node.AccUtils.isAccessibilityServiceOn;
 import static top.niunaijun.blackboxa.node.AccUtils.printLogMsg;
@@ -29,7 +28,6 @@ import top.niunaijun.blackbox.BlackBoxCore;
 import top.niunaijun.blackbox.entity.pm.InstallResult;
 import top.niunaijun.blackboxa.MyBoard;
 import top.niunaijun.blackboxa.MyGlobalVar;
-import top.niunaijun.blackboxa.R;
 import top.niunaijun.blackboxa.app.AppManager;
 import top.niunaijun.blackboxa.databinding.ActivityMyBinding;
 import top.niunaijun.blackboxa.node.GlobalVariableHolder;
@@ -49,7 +47,7 @@ public class MyActivity extends LoadingActivity {
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         mBinding = ActivityMyBinding.inflate(getLayoutInflater());
         //ui初始化
-        initToolbar(mBinding.toolbarLayout.toolbar, R.string.app_name, false, () -> null);
+        //initToolbar(mBinding.toolbarLayout.toolbar, R.string.app_name, false, () -> null);
         setContentView(mBinding.getRoot());
         mBinding.init.setOnClickListener(v -> init());
         mBinding.start.setOnClickListener(v -> start());
@@ -75,6 +73,8 @@ public class MyActivity extends LoadingActivity {
     public void init() {
         showLoading();
         core.setXPEnable(true);
+        Log.d(TAG, "是否隐藏xp: " + AppManager.getMBlackBoxLoader().hideXposed());
+        Log.d(TAG, "是否隐藏xposed: " + AppManager.getMBlackBoxLoader().hideXposed());
         AppManager.getMBlackBoxLoader().invalidHideXposed(true);
         AppManager.getMBlackBoxLoader().invalidHideRoot(true);
         initDisplay();//初始化屏幕信息
@@ -157,12 +157,6 @@ public class MyActivity extends LoadingActivity {
         }
         //启用模块
         core.setModuleEnable("com.jianjiao.duoduo", true);
-        if (devMode) {
-            //开发者模式
-
-        } else {
-
-        }
         initDisplay();//初始化屏幕信息
         getFloatPermission();//初始化悬浮窗权限
         //初始化无障碍服务

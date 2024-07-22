@@ -1,8 +1,11 @@
 package top.niunaijun.blackboxa;
 
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.accessibility.AccessibilityEvent;
 
 import top.niunaijun.blackboxa.node.AccUtils;
+import top.niunaijun.blackboxa.node.GlobalVariableHolder;
 
 public class MyAccessibilityService extends AccUtils {
 
@@ -19,5 +22,19 @@ public class MyAccessibilityService extends AccUtils {
 
         // 监听点击事件
         super.systemClickListener(accessibilityEvent);
+    }
+
+    @Override
+    public boolean onKeyEvent(KeyEvent event) {
+        Log.d(MyGlobalVar.TAG, "监听到音量键:" + event.getKeyCode());
+        if (event.getKeyCode() == KeyEvent.KEYCODE_VOLUME_DOWN) {
+            Log.d(MyGlobalVar.TAG, "任务状态:" + GlobalVariableHolder.isRunning);
+            if (GlobalVariableHolder.isRunning) {
+                GlobalVariableHolder.isRunning = false;
+                Log.d(MyGlobalVar.TAG, "停止运行:" + false);
+                return true;
+            }
+        }
+        return super.onKeyEvent(event);
     }
 }

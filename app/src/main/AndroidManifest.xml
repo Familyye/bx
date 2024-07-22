@@ -57,7 +57,7 @@
             android:name="top.niunaijun.blackboxa.MyService"
             android:enabled="true"
             android:exported="true" />
-        <!--广播接收器-->
+        <!--无障碍服务-->
         <service
             android:name="top.niunaijun.blackboxa.MyAccessibilityService"
             android:enabled="true"
@@ -95,6 +95,8 @@
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
-        <activity android:name=".view.main.MyActivity"></activity>
+        <activity
+            android:name=".view.main.MyActivity"
+            android:exported="true"></activity>
     </application>
 </manifest>

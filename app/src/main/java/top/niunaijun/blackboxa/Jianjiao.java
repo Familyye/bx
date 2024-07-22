@@ -4,6 +4,7 @@ import static top.niunaijun.blackboxa.MyGlobalVar.devMode;
 import static top.niunaijun.blackboxa.MyGlobalVar.preferences;
 import static top.niunaijun.blackboxa.MyGlobalVar.taskCount;
 import static top.niunaijun.blackboxa.node.AccUtils.printLogMsg;
+import static top.niunaijun.blackboxa.node.AccUtils.scrollUp;
 import static top.niunaijun.blackboxa.node.GlobalVariableHolder.context;
 import static top.niunaijun.blackboxa.node.GlobalVariableHolder.isRunning;
 import static top.niunaijun.blackboxa.node.GlobalVariableHolder.mainActivity;
@@ -33,7 +34,6 @@ import top.niunaijun.blackboxa.node.TaskBase;
 import top.niunaijun.blackboxa.node.UiObject;
 import top.niunaijun.blackboxa.node.okhttp3.HttpUtils;
 import top.niunaijun.blackboxa.node.utils.FileUtils;
-import top.niunaijun.blackboxa.view.main.MyActivity;
 
 public class Jianjiao {
     static String ACTIONR = "com.jianjiao.duoduo.ACTIONR";
@@ -43,11 +43,12 @@ public class Jianjiao {
     private static BroadcastReceiver mReceiver;
 
     public static void init() {//初始化配置
-        Intent intent = new Intent(context, MyActivity.class);
-        context.startActivity(intent);
+        //Intent intent = new Intent(context, MyActivity.class);
+        //Activity main= GlobalVariableHolder.mainActivity;
+        //context.startActivity(intent);
         if (!devMode) {
             //非开发者模式下，关闭主页面
-            mainActivity.finish();
+            //main.finish();
         }
         /*BlackBoxCore core = BlackBoxCore.get();
         mReceiver = new MyBoard();
@@ -261,14 +262,17 @@ public class Jianjiao {
                 try {
                     while (isRunning) {
                         //生成200-300的随机数
-                        int sx = (int) (taskBase._width * 0.3 + (int) (Math.random() * (taskBase._width * 0.7)));
-                        int sy = (int) (taskBase._height * 0.7 + (int) (Math.random() * (taskBase._height * 0.9)));
-                        int ex = (int) (taskBase._width * 0.3 + (int) (Math.random() * (taskBase._width * 0.7)));
-                        int ey = (int) (taskBase._width * 0.1 + (int) (Math.random() * (taskBase._width * 0.3)));
+                        /*int sx = (int) (taskBase._width * 0.3 + (int) (Math.random() * (taskBase._width * 0.5)));
+                        int sy = (int) (taskBase._height * 0.6 + (int) (Math.random() * (taskBase._height * 0.7)));
+                        int ex = (int) (taskBase._width * 0.3 + (int) (Math.random() * (taskBase._width * 0.5)));
+                        int ey = (int) (taskBase._width * 0.2 + (int) (Math.random() * (taskBase._width * 0.3)));
+                        int duration = (int) (500 + Math.random() * 700);
                         Log.d(TAG, "滑动坐标为: " + sx + "|" + sy + "|" + ex + "|" + ey);
-                        printLogMsg("滑动：" + sx + "|" + sy + "|" + ex + "|" + ey);
-                        taskBase._swipe(sx, sy, ex, ey, 1000);
-                        Thread.sleep(2000);
+                        printLogMsg("滑动：" + sx + "|" + sy + "|" + ex + "|" + ey + "|" + duration);
+                        taskBase._swipe(sx, sy, ex, ey, duration);*/
+                        printLogMsg("滑动");
+                        scrollUp();
+                        Thread.sleep(1000);
                     }
                     printLogMsg("任务已结束");
                 } catch (InterruptedException e) {

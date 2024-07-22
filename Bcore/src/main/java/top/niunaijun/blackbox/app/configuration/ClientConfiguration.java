@@ -13,11 +13,11 @@ import java.io.File;
 public abstract class ClientConfiguration {
 
     public boolean isHideRoot() {
-        return false;
+        return true;
     }
 
     public boolean isHideXposed() {
-        return false;
+        return true;
     }
 
     public abstract String getHostPackageName();

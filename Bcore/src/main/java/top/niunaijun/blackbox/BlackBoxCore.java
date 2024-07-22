@@ -296,6 +296,10 @@ public class BlackBoxCore extends ClientConfiguration {
         BXposedManager.get().setModuleEnable(packageName, enable);
     }
 
+    public void testFn() {
+        //BXposedManager.get().
+    }
+
     public List<InstalledModule> getInstalledXPModules() {
         return BXposedManager.get().getInstalledModules();
     }
@@ -403,12 +407,16 @@ public class BlackBoxCore extends ClientConfiguration {
 
     @Override
     public boolean isHideRoot() {
-        return mClientConfiguration.isHideRoot();
+        boolean hidden = mClientConfiguration.isHideRoot();
+        Log.d(TAG, "isHideRoot: " + hidden);
+        return hidden;
     }
 
     @Override
     public boolean isHideXposed() {
-        return mClientConfiguration.isHideXposed();
+        boolean hiddenXP = mClientConfiguration.isHideXposed();
+        Log.d(TAG, "isHideXP: " + hiddenXP);
+        return hiddenXP;
     }
 
     @Override

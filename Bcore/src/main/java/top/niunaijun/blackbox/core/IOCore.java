@@ -4,9 +4,9 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
-import android.os.Environment;
 import android.os.Process;
 import android.text.TextUtils;
+import android.util.Log;
 
 import java.io.File;
 import java.util.HashMap;
@@ -135,6 +135,7 @@ public class IOCore {
                 blackRule.add(String.format("/storage/emulated/%d/Pictures", systemUserId));
             }
             if (BlackBoxCore.get().isHideRoot()) {
+                Log.d("__尖叫__" + TAG, "hideRoot(rule): " + rule);
                 hideRoot(rule);
             }
             proc(rule);
