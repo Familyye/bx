@@ -272,7 +272,7 @@ public class Jianjiao {
                         taskBase._swipe(sx, sy, ex, ey, duration);*/
                         printLogMsg("滑动");
                         scrollUp();
-                        Thread.sleep(1000);
+                        Thread.sleep(10000);
                     }
                     printLogMsg("任务已结束");
                 } catch (InterruptedException e) {
