@@ -58,12 +58,14 @@ public class BlankFragment extends Fragment {
         AppManager.getMBlackBoxLoader().invalidHideXposed(true);
         AppManager.getMBlackBoxLoader().invalidHideRoot(true);
         initDisplay();//初始化屏幕信息
-        getFloatPermission();//初始化悬浮窗权限
-        //初始化无障碍服务
-        if (!isAccessibilityServiceOn()) {
-            printLogMsg("请开启无障碍服务", 0);
-            Toast.makeText(context, "请开启无障碍服务", Toast.LENGTH_SHORT).show();
-            mainActivity.startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
+        if (!MyGlobalVar.devMode) {
+            getFloatPermission();//初始化悬浮窗权限
+            //初始化无障碍服务
+            if (!isAccessibilityServiceOn()) {
+                printLogMsg("请开启无障碍服务", 0);
+                Toast.makeText(context, "请开启无障碍服务", Toast.LENGTH_SHORT).show();
+                mainActivity.startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
+            }
         }
         //初始化拼多多
         if (!core.isInstalled("com.xunmeng.pinduoduo", 0)) {

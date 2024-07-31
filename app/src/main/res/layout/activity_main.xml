@@ -13,7 +13,6 @@
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent" />
 
-
     <com.github.nukc.stateview.StateView
         android:id="@+id/stateView"
         android:layout_width="match_parent"
@@ -29,17 +28,36 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/toolbar_layout" />-->
-    <fragment
-        android:id="@+id/my_fragment"
-        android:name="top.niunaijun.blackboxa.view.main.BlankFragment"
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar_layout" />
+        app:layout_constraintTop_toBottomOf="@id/toolbar_layout">
 
-    <!--<com.tbuonomo.viewpagerdotsindicator.WormDotsIndicator
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/viewPager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@color/line_between" />
+
+        <fragment
+            android:id="@+id/my_fragment"
+            android:name="top.niunaijun.blackboxa.view.main.BlankFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="2" />
+    </LinearLayout>
+
+    <com.tbuonomo.viewpagerdotsindicator.WormDotsIndicator
         android:id="@+id/dots_indicator"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -52,9 +70,10 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:progressMode="true" />-->
-    <!--app:layout_constraintTop_toBottomOf="@id/viewPager"-->
-    <!--<com.google.android.material.floatingactionbutton.FloatingActionButton
+        app:layout_constraintTop_toBottomOf="@id/viewPager"
+        app:progressMode="true" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -63,6 +82,6 @@
         android:contentDescription="TODO"
         android:src="@drawable/ic_add"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />-->
+        app:layout_constraintRight_toRightOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

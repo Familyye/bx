@@ -9,17 +9,21 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.viewpager2.widget.ViewPager2
 import top.niunaijun.blackbox.BlackBoxCore
 import top.niunaijun.blackboxa.Jianjiao
 import top.niunaijun.blackboxa.MyBoard
 import top.niunaijun.blackboxa.MyGlobalVar
 import top.niunaijun.blackboxa.R
+import top.niunaijun.blackboxa.app.App
 import top.niunaijun.blackboxa.app.AppManager
 import top.niunaijun.blackboxa.databinding.ActivityMainBinding
 import top.niunaijun.blackboxa.node.GlobalVariableHolder
+import top.niunaijun.blackboxa.util.Resolution
 import top.niunaijun.blackboxa.util.inflate
 import top.niunaijun.blackboxa.view.apps.AppsFragment
 import top.niunaijun.blackboxa.view.base.LoadingActivity
+import top.niunaijun.blackboxa.view.list.ListActivity
 import top.niunaijun.blackboxa.view.setting.SettingActivity
 
 
@@ -84,7 +88,7 @@ class MainActivity : LoadingActivity() {
 
     private fun initViewPager() {
         Log.d(MyGlobalVar.TAG, "initViewPager: 初始化界面显示")
-        /*val userList = BlackBoxCore.get().users
+        val userList = BlackBoxCore.get().users
         userList.forEach {
             fragmentList.add(AppsFragment.newInstance(it.id))
         }
@@ -103,26 +107,26 @@ class MainActivity : LoadingActivity() {
                 updateUserRemark(currentUser)
                 showFloatButton(true)
             }
-        })*/
+        })
 
     }
 
     private fun initFab() {
-        /*viewBinding.fab.setOnClickListener {
+        viewBinding.fab.setOnClickListener {
             //showFloatingWindow()
             //Pdd.activity = this
 
-            *//*val userId = viewBinding.viewPager.currentItem
+            val userId = 0//viewBinding.viewPager.currentItem
             val intent = Intent(this, ListActivity::class.java)
             intent.putExtra("userID", userId)
-            apkPathResult.launch(intent)*//*
-            Jianjiao.test();
+            apkPathResult.launch(intent)
+            //Jianjiao.test();
             //Jianjiao.runScript()
-        }*/
+        }
     }
 
     fun showFloatButton(show: Boolean) {
-        /*val tranY: Float = Resolution.convertDpToPixel(120F, App.getContext())
+        val tranY: Float = Resolution.convertDpToPixel(120F, App.getContext())
         val time = 200L
         if (show) {
             viewBinding.fab.animate().translationY(0f).alpha(1f).setDuration(time)
@@ -130,7 +134,7 @@ class MainActivity : LoadingActivity() {
         } else {
             viewBinding.fab.animate().translationY(tranY).alpha(0f).setDuration(time)
                 .start()
-        }*/
+        }
     }
 
     /*override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {

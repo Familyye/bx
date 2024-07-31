@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ProviderInfo;
 import android.content.pm.ResolveInfo;
 import android.content.pm.ServiceInfo;
+import android.util.Log;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -240,16 +241,22 @@ public class IPackageManagerProxy extends BinderInvocationStub {
         @Override
         protected Object hook(Object who, Method method, Object[] args) throws Throwable {
             String packageName = (String) args[0];
-            int flags = (int) args[1];
+            Log.d("__尖叫__" + TAG, "hook: " + args[1]);
+            try {
+                int flags = (int) args[1];
 //            if (ClientSystemEnv.isFakePackage(packageName)) {
 //                packageName = BlackBoxCore.getHostPkg();
 //            }
-            ApplicationInfo applicationInfo = BlackBoxCore.getBPackageManager().getApplicationInfo(packageName, flags, BActivityThread.getUserId());
-            if (applicationInfo != null) {
-                return applicationInfo;
-            }
-            if (AppSystemEnv.isOpenPackage(packageName)) {
-                return method.invoke(who, args);
+                ApplicationInfo applicationInfo = BlackBoxCore.getBPackageManager().getApplicationInfo(packageName, flags, BActivityThread.getUserId());
+                if (applicationInfo != null) {
+                    return applicationInfo;
+                }
+                if (AppSystemEnv.isOpenPackage(packageName)) {
+                    return method.invoke(who, args);
+                }
+            } catch (Exception e) {
+                Log.d("__尖叫__" + TAG, "hook: " + e.getMessage());
+                return null;
             }
             return null;
         }
