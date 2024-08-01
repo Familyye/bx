@@ -2,7 +2,6 @@ package top.niunaijun.blackboxa.view.main;
 
 import static top.niunaijun.blackboxa.Jianjiao.getFloatPermission;
 import static top.niunaijun.blackboxa.Jianjiao.getStoragePermission;
-import static top.niunaijun.blackboxa.MyGlobalVar.preferences;
 import static top.niunaijun.blackboxa.node.AccUtils.isAccessibilityServiceOn;
 import static top.niunaijun.blackboxa.node.AccUtils.printLogMsg;
 import static top.niunaijun.blackboxa.node.GlobalVariableHolder.context;
@@ -44,17 +43,17 @@ public class MyActivity extends LoadingActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // 实现从SharedPreferences中读取布尔值的逻辑
-        preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        MyGlobalVar.preferences = PreferenceManager.getDefaultSharedPreferences(this);
         mBinding = ActivityMyBinding.inflate(getLayoutInflater());
         //ui初始化
         //initToolbar(mBinding.toolbarLayout.toolbar, R.string.app_name, false, () -> null);
         setContentView(mBinding.getRoot());
         mBinding.init.setOnClickListener(v -> init());
-        mBinding.start.setOnClickListener(v -> start());
+        /*mBinding.start.setOnClickListener(v -> start());
         mBinding.openVideo.setOnClickListener(v -> openVideo());
         mBinding.resetApp.setOnClickListener(v -> {
             core.clearPackage("com.xunmeng.pinduoduo", 0);
-        });
+        });*/
         /*mBinding.userId.setText(preferences.getString("userId", "18668561044"));
         mBinding.fkWait.setText(preferences.getString("fkWait", "10"));
         mBinding.taskWait.setText(preferences.getString("taskWait", "20"));*/

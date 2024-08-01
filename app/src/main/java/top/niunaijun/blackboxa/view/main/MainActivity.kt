@@ -9,6 +9,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.preference.PreferenceManager
 import androidx.viewpager2.widget.ViewPager2
 import top.niunaijun.blackbox.BlackBoxCore
 import top.niunaijun.blackboxa.Jianjiao
@@ -40,6 +41,8 @@ class MainActivity : LoadingActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // 实现从SharedPreferences中读取布尔值的逻辑
+        MyGlobalVar.preferences = PreferenceManager.getDefaultSharedPreferences(this)
         setContentView(viewBinding.root)
         initToolbar(viewBinding.toolbarLayout.toolbar, R.string.app_name)
         initViewPager()
@@ -87,12 +90,10 @@ class MainActivity : LoadingActivity() {
     }
 
     private fun initViewPager() {
-        Log.d(MyGlobalVar.TAG, "initViewPager: 初始化界面显示")
         val userList = BlackBoxCore.get().users
         userList.forEach {
             fragmentList.add(AppsFragment.newInstance(it.id))
         }
-
         currentUser = userList.firstOrNull()?.id ?: 0
         fragmentList.add(AppsFragment.newInstance(userList.size))
         mViewPagerAdapter = ViewPagerAdapter(this)
@@ -108,8 +109,31 @@ class MainActivity : LoadingActivity() {
                 showFloatButton(true)
             }
         })
-
     }
+
+    fun shuaxin() {
+        fragmentList.clear()
+        val userList = BlackBoxCore.get().users
+        userList.forEach {
+            fragmentList.add(AppsFragment.newInstance(it.id))
+        }
+        currentUser = userList.firstOrNull()?.id ?: 0
+        fragmentList.add(AppsFragment.newInstance(userList.size))
+        mViewPagerAdapter = ViewPagerAdapter(this)
+        mViewPagerAdapter.replaceData(fragmentList)
+        viewBinding.viewPager.adapter = mViewPagerAdapter
+        viewBinding.dotsIndicator.setViewPager2(viewBinding.viewPager)
+        viewBinding.viewPager.registerOnPageChangeCallback(object :
+            ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+                currentUser = fragmentList[position].userID
+                updateUserRemark(currentUser)
+                showFloatButton(true)
+            }
+        })
+    }
+
 
     private fun initFab() {
         viewBinding.fab.setOnClickListener {

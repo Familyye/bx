@@ -82,7 +82,6 @@ public class BlackBoxCore extends ClientConfiguration {
     private final Handler mHandler = new Handler(Looper.getMainLooper());
     private final int mHostUid = Process.myUid();
     private final int mHostUserId = BRUserHandle.get().myUserId();
-
     public static BlackBoxCore get() {
         return sBlackBoxCore;
     }

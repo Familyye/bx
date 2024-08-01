@@ -1,6 +1,7 @@
 package top.niunaijun.blackboxa;
 
 import static top.niunaijun.blackboxa.MyGlobalVar.devMode;
+import static top.niunaijun.blackboxa.MyGlobalVar.getGoodsIdForUrl;
 import static top.niunaijun.blackboxa.MyGlobalVar.preferences;
 import static top.niunaijun.blackboxa.MyGlobalVar.taskCount;
 import static top.niunaijun.blackboxa.node.AccUtils.printLogMsg;
@@ -42,7 +43,8 @@ public class Jianjiao {
     private static final String TAG = MyGlobalVar.TAG;
     private static BroadcastReceiver mReceiver;
 
-    public static void init() {//初始化配置
+    public static void init() {
+        //初始化配置
         //Intent intent = new Intent(context, MyActivity.class);
         //Activity main= GlobalVariableHolder.mainActivity;
         //context.startActivity(intent);
@@ -100,7 +102,9 @@ public class Jianjiao {
         TaskBase taskBase = new TaskBase();
         userId = preferences.getString("userId", "18668561044");
         int fkWait = Integer.parseInt(preferences.getString("fkWait", "10"));
-        int taskWait = Integer.parseInt(preferences.getString("taskWait", "20"));
+        int taskWait = Integer.parseInt(preferences.getString("taskWait", "3"));
+        String customUrl = preferences.getString("customUrl", "https://mobile.yangkeduo.com/mall_quality_assurance.html?_t_timestamp=comm_new_person&goods_id=123456");
+        String customGoodsId = getGoodsIdForUrl(customUrl);
         thread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -139,7 +143,7 @@ public class Jianjiao {
                                     }
                                 }
                                 printLogMsg("获取到任务：" + goodsId);
-                                String url = "https://mobile.yangkeduo.com/mall_quality_assurance.html?_t_timestamp=comm_new_person&goods_id=" + goodsId;
+                                String url = customUrl.replace(customGoodsId, goodsId);//"https://mobile.yangkeduo.com/mall_quality_assurance.html?_t_timestamp=comm_new_person&goods_id=" + goodsId;
                                 taskBase._text("请描述下您遇到的问题～").findOne().click();
                                 Thread.sleep(2000);
                                 taskBase._text("请描述下您遇到的问题～").findOne().setText(url);
@@ -155,13 +159,13 @@ public class Jianjiao {
                                     //判断价格信息
                                     taskBase._textContains("查看商品详情").findOne().click();
                                     /*UiObject price = taskBase._textContains("¥0").findOne();
-                                if(price==null){
+                                    if(price==null){
 
-                                }else{
-                                    printLogMsg("商品价格异常，跳过");
-                                    goodsId="";
-                                    continue;
-                                }*/
+                                    }else{
+                                        printLogMsg("商品价格异常，跳过");
+                                        goodsId="";
+                                        continue;
+                                    }*/
                                 }
                                 Thread.sleep(3000);
                                 boolean jixu = true;

@@ -1,23 +1,134 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <!--<include
-        android:id="@+id/toolbar_layout"
-        layout="@layout/view_toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent" />-->
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="5dp"
+            android:layout_weight="1"
+            android:background="@color/white"
+            app:errorTextColor="#FF0000">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/userId"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:gravity="center_horizontal"
+                android:hint="用户ID"
+                android:inputType="number"
+                android:maxLength="20"
+                android:text="安理会三个v阿黄举报奥斯卡阿克苏吧"
+                android:textSize="14dp" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="5dp"
+            android:layout_weight="1"
+            android:background="@color/white"
+            android:rotationX="0"
+            app:errorTextColor="#FF0000">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/fkWait"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:gravity="center_horizontal"
+                android:hint="风控等待(分)"
+                android:inputType="number"
+                android:maxLength="20"
+                android:maxLines="1"
+                android:textSize="14dp" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="5dp"
+            android:layout_weight="1"
+            android:background="@color/white"
+            android:rotationX="0"
+            app:errorTextColor="#FF0000">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/taskWait"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@color/white"
+                android:gravity="center_horizontal"
+                android:hint="任务间隔(秒)"
+                android:inputType="number"
+                android:maxLength="20"
+                android:maxLines="1"
+                android:textSize="14dp" />
+        </com.google.android.material.textfield.TextInputLayout>
+    </LinearLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_row="1"
+        android:layout_column="0"
+        android:layout_columnWeight="3"
+        android:layout_gravity="clip_horizontal"
+        android:layout_marginHorizontal="10dp"
+        android:background="@color/white"
+        app:errorTextColor="#FF0000">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/costomLink"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:gravity="center_horizontal"
+            android:hint="自定义链接"
+            android:inputType="text"
+            android:text="阿桑的歌拉开首都布的联合开发关不上的开发板v卢卡斯的奥斯陆扩大了 拉克斯基的巴嘎拉克斯拉阿里山扩大吧"
+            android:textSize="14dp" />
+        <!--<com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/userId"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:gravity="center_horizontal"
+            android:hint="用户ID"
+            android:inputType="number"
+            android:text="安理会三个v阿黄举报奥斯卡阿克苏吧阿桑的歌拉开首都布的联合开发关不上的开发板v卢卡斯的奥斯陆扩大了"
+            android:textSize="14dp" />-->
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <Button
+        android:id="@+id/init"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center_horizontal"
+        android:text="初始化" />
+
+
+    <!--<LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
         android:orientation="vertical">
 
-        <!--<com.google.android.material.textfield.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/til"
             android:layout_width="120dp"
             android:layout_height="wrap_content"
@@ -75,7 +186,7 @@
                 android:maxLength="20"
                 android:maxLines="1"
                 android:textSize="14dp" />
-        </com.google.android.material.textfield.TextInputLayout>-->
+        </com.google.android.material.textfield.TextInputLayout>
 
         <Button
             android:id="@+id/init"
@@ -89,7 +200,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0" />
 
-        <Button
+        &lt;!&ndash;<Button
             android:id="@+id/start"
             android:layout_width="120dp"
             android:layout_height="wrap_content"
@@ -100,8 +211,8 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0" />
-
-        <Button
+&ndash;&gt;
+        &lt;!&ndash;<Button
             android:id="@+id/openVideo"
             android:layout_width="120dp"
             android:layout_height="wrap_content"
@@ -111,9 +222,9 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0" />
+            app:layout_constraintVertical_bias="0.0" />&ndash;&gt;
 
-        <Button
+        &lt;!&ndash;<Button
             android:id="@+id/resetApp"
             android:layout_width="120dp"
             android:layout_height="wrap_content"
@@ -123,6 +234,6 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0" />
-    </LinearLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
+            app:layout_constraintVertical_bias="0.0" />&ndash;&gt;
+    </LinearLayout>-->
+</LinearLayout>

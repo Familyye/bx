@@ -26,6 +26,7 @@ object InjectionUtil {
 
     private val fakeLocationRepository = FakeLocationRepository()
 
+    @JvmStatic
     fun getAppsFactory() : AppsFactory {
         return AppsFactory(appsRepository)
     }

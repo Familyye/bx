@@ -543,7 +543,8 @@ public class FloatingButton extends Service {
             printLogMsg("开始运行", 0);
             smallCircle2.setText("停止");
             //runScript();
-            Jianjiao.huadong();
+            Jianjiao.runScript();
+            //Jianjiao.huadong();
         }
     }
 

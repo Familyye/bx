@@ -3,6 +3,7 @@ package top.niunaijun.blackboxa.view.apps
 import android.graphics.Point
 import android.os.Bundle
 import android.text.TextUtils
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -16,6 +17,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import cbfg.rvadapter.RVAdapter
 import com.afollestad.materialdialogs.MaterialDialog
 import top.niunaijun.blackbox.BlackBoxCore
+import top.niunaijun.blackboxa.MyGlobalVar
 import top.niunaijun.blackboxa.R
 import top.niunaijun.blackboxa.bean.AppInfo
 import top.niunaijun.blackboxa.databinding.FragmentAppsBinding
@@ -25,7 +27,7 @@ import top.niunaijun.blackboxa.util.inflate
 import top.niunaijun.blackboxa.util.toast
 import top.niunaijun.blackboxa.view.base.LoadingActivity
 import top.niunaijun.blackboxa.view.main.MainActivity
-import java.util.*
+import java.util.Collections
 import kotlin.math.abs
 
 
@@ -143,7 +145,7 @@ class AppsFragment : Fragment() {
         }
     }
 
-    private fun onItemMove(fromPosition:Int, toPosition:Int){
+    private fun onItemMove(fromPosition: Int, toPosition: Int) {
         if (fromPosition < toPosition) {
             for (i in fromPosition until toPosition) {
                 Collections.swap(mAdapter.getItems(), i, i + 1)
@@ -158,7 +160,7 @@ class AppsFragment : Fragment() {
 
     private fun setOnLongClick() {
         mAdapter.setItemLongClickListener { view, data, _ ->
-            popupMenu = PopupMenu(requireContext(),view).also {
+            popupMenu = PopupMenu(requireContext(), view).also {
                 it.inflate(R.menu.app_menu)
                 it.setOnMenuItemClickListener { item ->
                     when (item.itemId) {
@@ -188,6 +190,7 @@ class AppsFragment : Fragment() {
             }
         }
     }
+
     private fun initData() {
         viewBinding.stateView.showLoading()
         viewModel.getInstalledApps(userID)
@@ -254,10 +257,10 @@ class AppsFragment : Fragment() {
     private fun stopApk(info: AppInfo) {
         MaterialDialog(requireContext()).show {
             title(R.string.app_stop)
-            message(text = getString(R.string.app_stop_hint,info.name))
+            message(text = getString(R.string.app_stop_hint, info.name))
             positiveButton(R.string.done) {
                 BlackBoxCore.get().stopPackage(info.packageName, userID)
-                toast(getString(R.string.is_stop,info.name))
+                toast(getString(R.string.is_stop, info.name))
             }
             negativeButton(R.string.cancel)
         }
@@ -270,7 +273,7 @@ class AppsFragment : Fragment() {
     private fun clearApk(info: AppInfo) {
         MaterialDialog(requireContext()).show {
             title(R.string.app_clear)
-            message(text = getString(R.string.app_clear_hint,info.name))
+            message(text = getString(R.string.app_clear_hint, info.name))
             positiveButton(R.string.done) {
                 showLoading()
                 viewModel.clearApkData(info.packageName, userID)
@@ -281,6 +284,7 @@ class AppsFragment : Fragment() {
 
 
     fun installApk(source: String) {
+        Log.d(MyGlobalVar.TAG, "安装apk：$source")
         showLoading()
         viewModel.install(source, userID)
     }
@@ -291,28 +295,27 @@ class AppsFragment : Fragment() {
     }
 
     private fun showLoading() {
-        if(requireActivity() is LoadingActivity){
+        if (requireActivity() is LoadingActivity) {
             (requireActivity() as LoadingActivity).showLoading()
         }
     }
 
 
     private fun hideLoading() {
-        if(requireActivity() is LoadingActivity){
+        if (requireActivity() is LoadingActivity) {
             (requireActivity() as LoadingActivity).hideLoading()
         }
     }
 
 
-    companion object{
-        fun newInstance(userID:Int): AppsFragment {
+    companion object {
+        fun newInstance(userID: Int): AppsFragment {
             val fragment = AppsFragment()
             val bundle = bundleOf("userID" to userID)
             fragment.arguments = bundle
             return fragment
         }
     }
-
 
 
 }

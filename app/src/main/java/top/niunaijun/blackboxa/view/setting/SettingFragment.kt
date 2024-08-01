@@ -57,6 +57,7 @@ class SettingFragment : PreferenceFragmentCompat() {
             val rootHidePreference: Preference = (findPreference("root_hide")!!)
             val hideRoot = AppManager.mBlackBoxLoader.hideRoot()
             rootHidePreference.setDefaultValue(hideRoot)
+
             Log.d(MyGlobalVar.TAG, "默认隐藏root : $hideRoot: ")
             rootHidePreference
         }
@@ -88,13 +89,13 @@ class SettingFragment : PreferenceFragmentCompat() {
         val pref = block()
         pref.setOnPreferenceChangeListener { preference, newValue ->
             val tmpHide = (newValue == true)
+            Log.d(MyGlobalVar.TAG + "_____", "默认: " + preference.key + "|" + tmpHide)
             when (preference.key) {
                 "xp_hide" -> {
                     AppManager.mBlackBoxLoader.invalidHideXposed(tmpHide)
                 }
 
                 "root_hide" -> {
-
                     AppManager.mBlackBoxLoader.invalidHideRoot(tmpHide)
                 }
 
