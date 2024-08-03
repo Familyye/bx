@@ -100,10 +100,10 @@ public class Jianjiao {
         MyGlobalVar.isWait = false;
         taskCount = 0;
         TaskBase taskBase = new TaskBase();
-        userId = preferences.getString("userId", "18668561044");
+        userId = preferences.getString("userId", "123456");
         int fkWait = Integer.parseInt(preferences.getString("fkWait", "10"));
         int taskWait = Integer.parseInt(preferences.getString("taskWait", "3"));
-        String customUrl = preferences.getString("customUrl", "https://mobile.yangkeduo.com/mall_quality_assurance.html?_t_timestamp=comm_new_person&goods_id=123456");
+        String customUrl = preferences.getString("costomLink", "");
         String customGoodsId = getGoodsIdForUrl(customUrl);
         thread = new Thread(new Runnable() {
             @Override
@@ -147,9 +147,9 @@ public class Jianjiao {
                                 taskBase._text("请描述下您遇到的问题～").findOne().click();
                                 Thread.sleep(2000);
                                 taskBase._text("请描述下您遇到的问题～").findOne().setText(url);
-                                Thread.sleep(1000);
+                                Thread.sleep(2000);
                                 taskBase._text("发送").findOne().click();
-                                Thread.sleep(1000);
+                                Thread.sleep(2000);
                                 taskBase._text(url).findOne().clickPoint();
                                 Thread.sleep(2000);
                                 //点击查看商品详情

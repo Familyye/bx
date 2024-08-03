@@ -28,7 +28,7 @@
                 android:hint="用户ID"
                 android:inputType="number"
                 android:maxLength="20"
-                android:text="安理会三个v阿黄举报奥斯卡阿克苏吧"
+                android:text=""
                 android:textSize="14dp" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -100,7 +100,7 @@
             android:gravity="center_horizontal"
             android:hint="自定义链接"
             android:inputType="text"
-            android:text="阿桑的歌拉开首都布的联合开发关不上的开发板v卢卡斯的奥斯陆扩大了 拉克斯基的巴嘎拉克斯拉阿里山扩大吧"
+            android:text=""
             android:textSize="14dp" />
         <!--<com.google.android.material.textfield.TextInputEditText
             android:id="@+id/userId"

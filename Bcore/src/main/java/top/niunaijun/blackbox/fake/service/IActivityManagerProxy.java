@@ -235,7 +235,6 @@ public class IActivityManagerProxy extends ClassInvocationStub {
 
     @ProxyMethod("bindService")
     public static class BindService extends MethodHook {
-
         @Override
         protected Object hook(Object who, Method method, Object[] args) throws Throwable {
             Intent intent = (Intent) args[2];

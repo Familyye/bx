@@ -45,10 +45,10 @@ public class BlankFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         mBinding.init.setOnClickListener(v -> init());
-        mBinding.userId.setText(preferences.getString("userId", "18668561044"));
+        mBinding.userId.setText(preferences.getString("userId", "123456"));
         mBinding.fkWait.setText(preferences.getString("fkWait", "10"));
         mBinding.taskWait.setText(preferences.getString("taskWait", "3"));
-        mBinding.costomLink.setText(preferences.getString("costomLink", "https://mobile.yangkeduo.com/mall_quality_assurance.html?_t_timestamp=comm_new_person&goods_id=123456"));
+        mBinding.costomLink.setText(preferences.getString("costomLink", ""));
         /*mBinding.start.setOnClickListener(v -> start());
         mBinding.openVideo.setOnClickListener(v -> openVideo());
         mBinding.resetApp.setOnClickListener(v -> {
@@ -67,6 +67,10 @@ public class BlankFragment extends Fragment {
     public void init() {
         //showLoading();
         core.setXPEnable(true);
+        preferences.edit().putString("userId", mBinding.userId.getText().toString()).apply();
+        preferences.edit().putString("fkWait", mBinding.fkWait.getText().toString()).apply();
+        preferences.edit().putString("taskWait", mBinding.taskWait.getText().toString()).apply();
+        preferences.edit().putString("costomLink", mBinding.costomLink.getText().toString()).apply();
         Log.d(TAG, "是否隐藏xp: " + AppManager.getMBlackBoxLoader().hideXposed());
         Log.d(TAG, "是否隐藏xposed: " + AppManager.getMBlackBoxLoader().hideXposed());
         AppManager.getMBlackBoxLoader().invalidHideXposed(true);
@@ -87,10 +91,7 @@ public class BlankFragment extends Fragment {
                 return;
             }
         }
-        preferences.edit().putString("userId", mBinding.userId.getText().toString()).apply();
-        preferences.edit().putString("fkWait", mBinding.fkWait.getText().toString()).apply();
-        preferences.edit().putString("taskWait", mBinding.taskWait.getText().toString()).apply();
-        preferences.edit().putString("costomLink", mBinding.costomLink.getText().toString()).apply();
+
         //初始化拼多多
         if (!core.isInstalled("com.xunmeng.pinduoduo", 0)) {
             //core.installPackageAsUser("com.xunmeng.pinduoduo", 0);
@@ -110,6 +111,10 @@ public class BlankFragment extends Fragment {
         viewModel.getInstalledApps(0);
         ((MainActivity) requireActivity()).scanUser();*/
         ((MainActivity) requireActivity()).shuaxin();
+        if (mBinding.costomLink.getText().toString().length() < 8) {
+            Toast.makeText(mainActivity, "请输入正确的商品链接:", Toast.LENGTH_SHORT).show();
+            return;
+        }
         Toast.makeText(mainActivity, "初始化完成，可以启动了:", Toast.LENGTH_SHORT).show();
     }
 
