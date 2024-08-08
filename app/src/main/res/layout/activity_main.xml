@@ -54,7 +54,8 @@
             android:name="top.niunaijun.blackboxa.view.main.BlankFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="2" />
+            android:layout_weight="1"
+            app:layout_constraintBottom_toTopOf="@id/dots_indicator" />
     </LinearLayout>
 
     <com.tbuonomo.viewpagerdotsindicator.WormDotsIndicator

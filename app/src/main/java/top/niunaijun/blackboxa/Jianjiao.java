@@ -150,15 +150,13 @@ public class Jianjiao {
                                 Thread.sleep(2000);
                                 taskBase._text("发送").findOne().click();
                                 Thread.sleep(2000);
-                                taskBase._text(url).findOne().clickPoint();
-                                Thread.sleep(2000);
+                                UiObject dizhi = taskBase._text(url).findOne();
+                                if (dizhi != null) {
+                                    dizhi.clickPoint();
+                                }
                                 //点击查看商品详情
                                 MyGlobalVar.intent = null;
-                                UiObject xiangqing = taskBase._textContains("查看商品详情").findOne();
-                                if (xiangqing != null) {
-                                    //判断价格信息
-                                    taskBase._textContains("查看商品详情").findOne().click();
-                                    /*UiObject price = taskBase._textContains("¥0").findOne();
+                                /*UiObject price = taskBase._textContains("¥0").findOne();
                                     if(price==null){
 
                                     }else{
@@ -166,7 +164,6 @@ public class Jianjiao {
                                         goodsId="";
                                         continue;
                                     }*/
-                                }
                                 Thread.sleep(3000);
                                 boolean jixu = true;
                                 while (jixu && !MyGlobalVar.isWait) {
@@ -217,20 +214,28 @@ public class Jianjiao {
                                             MyGlobalVar.isWait = true;
                                             break;
                                         }
+                                    } else if (taskBase._textContains("查看商品详情").findOne() != null) {
+                                        UiObject xiangqing = taskBase._textContains("查看商品详情").findOne();
+                                        xiangqing.click();
+                                        MyGlobalVar.intent = null;
+                                    } else {
+                                        dizhi = taskBase._text(url).findOne();
+                                        if (dizhi != null) {
+                                            dizhi.clickPoint();
+                                        }
                                     }
                                     Thread.sleep(1000);
                                 }
                                 Log.d(TAG, "run: 运行完成");
                                 Thread.sleep(2000);
                                 taskBase._back();
-                                Thread.sleep(1000);
-                                taskBase._back();
                             } else {
                                 taskBase._print("等待聊天界面:");
                                 Thread.sleep(3000);
                                 continue;
                             }
-                        } else {
+                        }
+                        /*else {
                             taskBase._print("不在拼多多界面:" + taskBase._activityName());
                             BlackBoxCore.get().stopPackage("com.xunmeng.pinduoduo", 0);
                             taskBase._sleep(2000);
@@ -239,7 +244,7 @@ public class Jianjiao {
                             taskBase._desc("聊天").findOne().click();
                             taskBase._sleep(2000);
                             taskBase._text("拼多多官方客服").findOne().click();
-                        }
+                        }*/
                     }
                     isRunning = false;
                     printLogMsg("任务已结束");
