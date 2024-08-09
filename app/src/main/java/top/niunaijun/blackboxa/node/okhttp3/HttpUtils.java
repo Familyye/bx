@@ -1,5 +1,9 @@
 package top.niunaijun.blackboxa.node.okhttp3;
 
+import static top.niunaijun.blackboxa.node.AccUtils.printLogMsg;
+
+import android.util.Log;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -18,6 +22,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
+import top.niunaijun.blackboxa.MyGlobalVar;
 import top.niunaijun.blackboxa.node.utils.ExceptionUtil;
 
 public class HttpUtils {
@@ -72,6 +77,7 @@ public class HttpUtils {
     public static String transferUrl(String goodsUrl, String ck, String pid) {
         HttpUtils.ck = ck;
         HttpUtils.pid = pid;
+        Log.d(MyGlobalVar.TAG, "transferUrl: " + goodsUrl + "|" + ck + "|" + pid);
         LinkedHashMap<String, String> headerMap = new LinkedHashMap<>();
         headerMap.put(":authority", "jinbao.pinduoduo.com");
         headerMap.put(":method", "POST");
@@ -122,7 +128,8 @@ public class HttpUtils {
             while ((line = reader.readLine()) != null) {
                 result.append(line);
             }
-            System.out.println("转换链接1: " + result.toString());
+            printLogMsg("转换链接———：" + result.toString());
+            Log.d(MyGlobalVar.TAG, "转换链接1: " + result.toString());
             JSONObject jsonObject = new JSONObject(result.toString());
             String shortUrl = jsonObject.getJSONObject("result").getString("shortUrl");
             return shortUrl;
@@ -136,7 +143,8 @@ public class HttpUtils {
             e.printStackTrace();
             return "0";
         } catch (JSONException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
+            return "0";
         }
     }
 

@@ -11,7 +11,7 @@ public class MyGlobalVar {
     public static String currentActivity = "";
     public static String TAG = "__尖叫__";
     public static Intent intent = null;
-    public static Boolean devMode = true;
+    public static Boolean devMode = false;
     public static Boolean isWait = false;
     public static int taskCount = 0;
 

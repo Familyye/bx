@@ -12,6 +12,7 @@ import static top.niunaijun.blackboxa.node.GlobalVariableHolder.mainActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.text.Editable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +22,8 @@ import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+
+import com.google.android.material.internal.TextWatcherAdapter;
 
 import java.io.File;
 
@@ -55,6 +58,10 @@ public class BlankFragment extends Fragment {
         mBinding.costomLink.setText(preferences.getString("costomLink", ""));
         mBinding.ck.setText(preferences.getString("ck", ""));
         mBinding.pid.setText(preferences.getString("pid", ""));
+        mBinding.usejinbao.setChecked(preferences.getBoolean("usejinbao", false));
+        mBinding.usejinbao.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            preferences.edit().putBoolean("usejinbao", isChecked).apply();
+        });
 
         //输入框失焦
         // 使用
@@ -64,6 +71,14 @@ public class BlankFragment extends Fragment {
         setupOnFocusChangeListener(mBinding.costomLink, "costomLink");
         setupOnFocusChangeListener(mBinding.ck, "ck");
         setupOnFocusChangeListener(mBinding.pid, "pid");
+        //输入框内容更改
+        setTextChange(mBinding.userId, "userId");
+        setTextChange(mBinding.fkWait, "fkWait");
+        setTextChange(mBinding.taskWait, "taskWait");
+        setTextChange(mBinding.costomLink, "costomLink");
+        setTextChange(mBinding.pid, "pid");
+        setTextChange(mBinding.ck, "ck");
+
         /*mBinding.userId.setOnFocusChangeListener((v, hasFocus) -> {
             if (!hasFocus) {
                 preferences.edit().putString("userId", mBinding.userId.getText().toString()).apply();
@@ -113,8 +128,6 @@ public class BlankFragment extends Fragment {
     public void init() {
         //String res = HttpUtils.get("http://43.248.118.77:9995/getTask?userId=");
         //HttpUtils.post("http://43.248.118.77:9995/getTask", "{\"pid\":\"1885064_275817387\",\"sourceUrl\":\"https://mobile.yangkeduo.com/goods.html?goods_id=39138905873\"}");
-
-
         /*new Thread(new Runnable() {
             @Override
             public void run() {
@@ -124,34 +137,6 @@ public class BlankFragment extends Fragment {
             }
         }).start();*/
         //showLoading();
-        core.setXPEnable(true);
-        preferences.edit().putString("userId", mBinding.userId.getText().toString()).apply();
-        preferences.edit().putString("fkWait", mBinding.fkWait.getText().toString()).apply();
-        preferences.edit().putString("taskWait", mBinding.taskWait.getText().toString()).apply();
-        preferences.edit().putString("costomLink", mBinding.costomLink.getText().toString()).apply();
-        preferences.edit().putString("ck", mBinding.ck.getText().toString()).apply();
-        preferences.edit().putString("pid", mBinding.pid.getText().toString()).apply();
-        Log.d(TAG, "是否隐藏xp: " + AppManager.getMBlackBoxLoader().hideXposed());
-        Log.d(TAG, "是否隐藏xposed: " + AppManager.getMBlackBoxLoader().hideXposed());
-        AppManager.getMBlackBoxLoader().invalidHideXposed(true);
-        AppManager.getMBlackBoxLoader().invalidHideRoot(true);
-        initDisplay();//初始化屏幕信息
-
-        if (!MyGlobalVar.devMode) {
-            getFloatPermission();//初始化悬浮窗权限
-            //初始化无障碍服务
-            if (!isAccessibilityServiceOn()) {
-                printLogMsg("请开启无障碍服务", 0);
-                Toast.makeText(context, "请开启无障碍服务", Toast.LENGTH_SHORT).show();
-                mainActivity.startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
-                return;
-            }
-            if (getGoodsIdForUrl(mBinding.costomLink.getText().toString()) == null) {
-                Toast.makeText(context, "自定义链接里面没有goods_id", Toast.LENGTH_SHORT).show();
-                return;
-            }
-        }
-
         //初始化拼多多
         if (!core.isInstalled("com.xunmeng.pinduoduo", 0)) {
             //core.installPackageAsUser("com.xunmeng.pinduoduo", 0);
@@ -171,10 +156,44 @@ public class BlankFragment extends Fragment {
         viewModel.getInstalledApps(0);
         ((MainActivity) requireActivity()).scanUser();
         ((MainActivity) requireActivity()).shuaxin();
-        if (mBinding.costomLink.getText().toString().length() < 8) {
-            Toast.makeText(mainActivity, "请输入正确的商品链接:", Toast.LENGTH_SHORT).show();
-            return;
+        core.setXPEnable(true);
+        Log.d(TAG, "是否隐藏xp: " + AppManager.getMBlackBoxLoader().hideXposed());
+        Log.d(TAG, "是否隐藏xposed: " + AppManager.getMBlackBoxLoader().hideXposed());
+        AppManager.getMBlackBoxLoader().invalidHideXposed(true);
+        AppManager.getMBlackBoxLoader().invalidHideRoot(true);
+        initDisplay();//初始化屏幕信息
+
+        if (!MyGlobalVar.devMode) {
+            getFloatPermission();//初始化悬浮窗权限
+            if (mBinding.usejinbao.isChecked()) {
+                if (mBinding.pid.getText().length() < 5) {
+                    Toast.makeText(context, "请输入pid", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (mBinding.ck.getText().length() < 5) {
+                    Toast.makeText(context, "请输入令牌", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            } else {
+                if (mBinding.costomLink.getText().toString().length() < 8) {
+                    Toast.makeText(mainActivity, "请输入正确的商品链接:", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (getGoodsIdForUrl(mBinding.costomLink.getText().toString()) == null) {
+                    Toast.makeText(context, "自定义链接里面没有goods_id", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            }
+            //初始化无障碍服务
+            if (!isAccessibilityServiceOn()) {
+                printLogMsg("请开启无障碍服务", 0);
+                Toast.makeText(context, "请开启无障碍服务", Toast.LENGTH_SHORT).show();
+                mainActivity.startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
+                return;
+            }
         }
+
+
         Toast.makeText(mainActivity, "初始化完成，可以启动了:", Toast.LENGTH_SHORT).show();
     }
 
@@ -199,4 +218,14 @@ public class BlankFragment extends Fragment {
         });
     }
 
+    private void setTextChange(EditText view, String key) {
+        view.addTextChangedListener(new TextWatcherAdapter() {
+            @Override
+            public void afterTextChanged(Editable s) {
+                // 正确的做法是直接使用传入的view，而不是尝试转换s
+                Log.d(TAG, "TextChanged: " + key + "___" + s.toString());
+                preferences.edit().putString(key, s.toString()).apply();
+            }
+        });
+    }
 }

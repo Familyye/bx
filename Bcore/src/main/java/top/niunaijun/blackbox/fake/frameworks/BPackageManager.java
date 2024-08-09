@@ -88,6 +88,22 @@ public class BPackageManager extends BlackManager<IBPackageManagerService> {
         return intent;
     }
 
+    public Intent openpddIntent(String packageName, String uri) {
+        Uri data = Uri.parse(uri);
+        Intent intentToResolve = new Intent(Intent.ACTION_VIEW, data);
+        intentToResolve.setPackage(packageName);
+        List<ResolveInfo> ris = queryIntentActivities(intentToResolve,
+                0,
+                intentToResolve.resolveTypeIfNeeded(BlackBoxCore.getContext().getContentResolver()),
+                0);
+
+        Intent intent = new Intent(intentToResolve);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setClassName(ris.get(0).activityInfo.packageName,
+                ris.get(0).activityInfo.name);
+        return intent;
+    }
+
     public ResolveInfo resolveService(Intent intent, int flags, String resolvedType, int userId) {
         try {
             return getService().resolveService(intent, flags, resolvedType, userId);

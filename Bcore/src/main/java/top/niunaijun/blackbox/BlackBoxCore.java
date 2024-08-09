@@ -217,6 +217,15 @@ public class BlackBoxCore extends ClientConfiguration {
         return true;
     }
 
+    public boolean launchPddIntent(String uri) {
+        Intent launchIntentForPackage = getBPackageManager().openpddIntent("com.xunmeng.pinduoduo", uri);
+        if (launchIntentForPackage == null) {
+            return false;
+        }
+        startActivity(launchIntentForPackage, 0);
+        return true;
+    }
+
     public boolean isInstalled(String packageName, int userId) {
         return getBPackageManager().isInstalled(packageName, userId);
     }

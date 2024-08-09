@@ -241,7 +241,7 @@ public class IPackageManagerProxy extends BinderInvocationStub {
         @Override
         protected Object hook(Object who, Method method, Object[] args) throws Throwable {
             String packageName = (String) args[0];
-            Log.d("__尖叫__" + TAG, "hook: " + args[1]);
+            Log.d(TAG, "hook: " + args[1]);
             try {
                 int flags = (int) args[1];
 //            if (ClientSystemEnv.isFakePackage(packageName)) {
@@ -255,7 +255,7 @@ public class IPackageManagerProxy extends BinderInvocationStub {
                     return method.invoke(who, args);
                 }
             } catch (Exception e) {
-                Log.d("__尖叫__" + TAG, "hook: " + e.getMessage());
+                Log.d(TAG, "hook: " + e.getMessage());
                 return null;
             }
             return null;
