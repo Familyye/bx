@@ -166,12 +166,30 @@ public class Jianjiao {
                                         goodsId = "";
                                         continue;
                                     }*/
-                                    Thread.sleep(3000);
-                                    if (taskBase._text("一键领取").findOne() != null) {
-                                        taskBase._text("一键领取").findOne().click();
-                                        Thread.sleep(3000);
+                                    Boolean lingqu = false;
+                                    Thread.sleep(5000);
+                                    try {
+                                        UiObject u = taskBase._text("一键领取").findOne();
+                                        if (u != null) {
+                                            u.click();
+                                            if (u != null && u.bounds() != null) {
+                                                lingqu = true;
+                                                taskBase._print("检测到一键领取：" + lingqu + "|" + u.bounds());
+                                                Thread.sleep(3000);
+                                            }
+                                        }
+                                    } catch (Exception e) {
+                                        taskBase._print("检测到一键领取异常：" + e.getMessage());
                                     }
+                                    /*if (taskBase._text("福利券商城").findOne() != null) {
+                                        printLogMsg("检测到福利券商城，切换任务");
+                                        Thread.sleep(2000);
+                                        taskBase._back();
+                                        continue;
+                                    }*/
                                     boolean jixu = true;
+                                    taskBase._print("lingqu：" + lingqu);
+                                    int i = 0;
                                     while (jixu && !MyGlobalVar.isWait) {
                                         if (MyGlobalVar.getIntentCode() == 9) {
                                             String goodsString = MyGlobalVar.getIntentData();
@@ -231,24 +249,37 @@ public class Jianjiao {
                                             }
                                         }
                                         Thread.sleep(1000);
+                                        if (i > 20) {
+                                            printLogMsg("加载商品失败,20s");
+                                            taskBase._back();
+                                            Thread.sleep(2000);
+                                            taskBase._back();
+                                            continue mainTask;
+                                        }
+                                        i++;
                                     }
                                     Log.d(TAG, "run: 运行完成");
                                     Thread.sleep(2000);
                                     taskBase._back();
+                                    if (lingqu) {
+                                        taskBase._print("返回第二遍：" + lingqu);
+                                        Thread.sleep(2000);
+                                        taskBase._back();
+                                    }
                                 } else {
                                     taskBase._print("等待聊天界面:");
                                     Thread.sleep(3000);
                                     continue;
                                 }
                             } else {
-                                taskBase._print("不在拼多多界面:" + taskBase._activityName());
+                                /*taskBase._print("不在拼多多界面:" + taskBase._activityName());
                                 BlackBoxCore.get().stopPackage("com.xunmeng.pinduoduo", 0);
                                 taskBase._sleep(2000);
                                 BlackBoxCore.get().launchApk("com.xunmeng.pinduoduo", 0);
                                 taskBase._sleep(3000);
                                 taskBase._desc("聊天").findOne().click();
                                 taskBase._sleep(2000);
-                                taskBase._text("拼多多官方客服").findOne().click();
+                                taskBase._text("拼多多官方客服").findOne().click();*/
                             }
                         }
                         isRunning = false;

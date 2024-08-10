@@ -22,7 +22,6 @@ import static top.niunaijun.blackboxa.node.AccUtils.startApplication;
 import static top.niunaijun.blackboxa.node.AccUtils.swipe;
 import static top.niunaijun.blackboxa.node.AccUtils.timeSleep;
 import static top.niunaijun.blackboxa.node.AccUtils.viewVideo;
-import static top.niunaijun.blackboxa.node.GlobalVariableHolder.ABSOLUTE_PATH;
 import static top.niunaijun.blackboxa.node.GlobalVariableHolder.context;
 import static top.niunaijun.blackboxa.node.GlobalVariableHolder.currentActivityName;
 import static top.niunaijun.blackboxa.node.GlobalVariableHolder.float_x;
@@ -37,7 +36,6 @@ import static top.niunaijun.blackboxa.node.GlobalVariableHolder.mainActivity;
 import static top.niunaijun.blackboxa.node.GlobalVariableHolder.navigationBarHeight;
 import static top.niunaijun.blackboxa.node.GlobalVariableHolder.navigationBarOpen;
 import static top.niunaijun.blackboxa.node.GlobalVariableHolder.statusBarHeight;
-import static top.niunaijun.blackboxa.node.GlobalVariableHolder.tag;
 import static top.niunaijun.blackboxa.node.GlobalVariableHolder.v8Runtime;
 import static top.niunaijun.blackboxa.node.GlobalVariableHolder.waitOneSecond;
 
@@ -59,6 +57,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import top.niunaijun.blackboxa.MyGlobalVar;
 import top.niunaijun.blackboxa.node.findColor.ScreenLib;
 import top.niunaijun.blackboxa.node.ntptime.NtpService;
 import top.niunaijun.blackboxa.node.okhttp3.HttpUtils;
@@ -269,6 +268,7 @@ public class TaskBase extends UiSelector implements ITaskBase {
     }
 
     public void _print(String msg) {
+        Log.d(MyGlobalVar.TAG + "__", "_print: " + msg);
         printLogMsg(msg);
     }
 
