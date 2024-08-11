@@ -1,8 +1,11 @@
 package top.niunaijun.blackboxa.node;
 
 
-import static top.niunaijun.blackboxa.node.AccUtils.*;
-import static top.niunaijun.blackboxa.node.GlobalVariableHolder.*;
+import static top.niunaijun.blackboxa.node.AccUtils.printLogMsg;
+import static top.niunaijun.blackboxa.node.AccUtils.timeSleep;
+import static top.niunaijun.blackboxa.node.GlobalVariableHolder.mHeight;
+import static top.niunaijun.blackboxa.node.GlobalVariableHolder.mWidth;
+import static top.niunaijun.blackboxa.node.GlobalVariableHolder.waitOneSecond;
 
 import android.graphics.Rect;
 import android.view.accessibility.AccessibilityNodeInfo;
@@ -66,13 +69,13 @@ import top.niunaijun.blackboxa.node.utils.StringUtils;
  * waitFor() 等待控件出现
  * 这些操作包含了绝大部分控件操作。根据这些我们可以很容易写出一个"刷屏"脚本(代码仅为示例，请不要在别人的群里测试，否则容易被踢):
  * while(true){
- *     className("EditText").findOne().setText("刷屏...");
- *     text("发送").findOne().clicK();
+ * className("EditText").findOne().setText("刷屏...");
+ * text("发送").findOne().clicK();
  * }
  * 上面这段代码也可以写成：
  * while(true){
- *     className("EditText").setText("刷屏...");
- *     text("发送").clicK();
+ * className("EditText").setText("刷屏...");
+ * text("发送").clicK();
  * }
  * 如果不加findOne()而直接进行操作，则选择器会找出所有符合条件的控件并操作。
  * 另外一个比较常用的操作的滑动。滑动操作的第一步是找到需要滑动的控件，例如要滑动 QQ 消息列表则在悬浮窗布局层次分析中找到AbsListView，这个控件就是消息列表控件，如下图：
@@ -81,20 +84,109 @@ import top.niunaijun.blackboxa.node.utils.StringUtils;
  * scrollForward()为向前滑，包括下滑和右滑。
  * 选择器的入门教程暂且要这里，更多信息可以查看下面的文档和选择器进阶。
  */
-public class UiSelector implements IUiSelector{
+public class UiSelector implements IUiSelector {
 
     public UiSelector() {
     }
 
     // *******************************属性**********************************
-     public Map<String, Object> containsAttributes = new HashMap<>(); // 包含的属性名
+    public Map<String, Object> containsAttributes = new HashMap<>(); // 包含的属性名
 
     // *******************************方法**********************************
+
+    private static boolean checkAttribute(AccessibilityNodeInfo node, String key, Object value) {
+        if (node != null) {
+            switch (key) {
+                case "text":
+                case "textContains":
+                    return String.valueOf(node.getText()).contains(String.valueOf(value));
+                case "textStartsWith":
+                    return String.valueOf(node.getText()).startsWith(String.valueOf(value));
+                case "textEndsWith":
+                    return String.valueOf(node.getText()).endsWith(String.valueOf(value));
+                case "textMatches":
+                    String text = String.valueOf(node.getText());
+                    text = text.equals("null") ? "" : text;
+                    return text.matches(String.valueOf(value));
+                case "desc":
+                case "descContains":
+                    return String.valueOf(node.getContentDescription()).contains(String.valueOf(value));
+                case "descStartsWith":
+                    return String.valueOf(node.getContentDescription()).startsWith(String.valueOf(value));
+                case "descEndsWith":
+                    return String.valueOf(node.getContentDescription()).endsWith(String.valueOf(value));
+                case "descMatches":
+                    String desc = String.valueOf(node.getContentDescription());
+                    desc = desc.equals("null") ? "" : desc;
+                    return desc.matches(String.valueOf(value));
+                case "id":
+                case "idContains":
+                    return String.valueOf(node.getViewIdResourceName()).contains(String.valueOf(value));
+                case "idStartsWith":
+                    return String.valueOf(node.getViewIdResourceName()).startsWith(String.valueOf(value));
+                case "idEndsWith":
+                    return String.valueOf(node.getViewIdResourceName()).endsWith(String.valueOf(value));
+                case "idMatches":
+                    return String.valueOf(node.getViewIdResourceName()).matches(String.valueOf(value));
+                case "className":
+                case "classNameContains":
+                    return String.valueOf(node.getClassName()).contains(String.valueOf(value));
+                case "classNameStartsWith":
+                    return String.valueOf(node.getClassName()).startsWith(String.valueOf(value));
+                case "classNameEndsWith":
+                    return String.valueOf(node.getClassName()).endsWith(String.valueOf(value));
+                case "classNameMatches":
+                    return String.valueOf(node.getClassName()).matches(String.valueOf(value));
+                case "packageName":
+                case "packageNameContains":
+                    return String.valueOf(node.getPackageName()).contains(String.valueOf(value));
+                case "packageNameStartsWith":
+                    return String.valueOf(node.getPackageName()).startsWith(String.valueOf(value));
+                case "packageNameEndsWith":
+                    return String.valueOf(node.getPackageName()).endsWith(String.valueOf(value));
+                case "bounds":
+                    int[] __value = (int[]) value;
+                    Rect _rect = new Rect();
+                    node.getBoundsInScreen(_rect);
+                    return (__value[0] == _rect.left && __value[1] == _rect.top && __value[2] == _rect.right && __value[3] == _rect.bottom);
+                case "boundsInScreen":
+                case "boundsInside":
+                    int[] _value = (int[]) value;
+                    Rect rect = new Rect();
+                    node.getBoundsInScreen(rect);
+                    return (rect.top <= rect.bottom && rect.left <= rect.right) &&
+                            (_value[0] <= rect.left && _value[1] <= rect.top && _value[2] >= rect.right && _value[3] >= rect.bottom);
+                case "drawingOrder":
+                    return (int) value == node.getDrawingOrder();
+                case "clickable":
+                    return (boolean) value == node.isClickable();
+                case "longClickable":
+                    return (boolean) value == node.isLongClickable();
+                case "checkable":
+                    return (boolean) value == node.isCheckable();
+                case "selected":
+                    return (boolean) value == node.isSelected();
+                case "enabled":
+                    return (boolean) value == node.isEnabled();
+                case "scrollable":
+                    return (boolean) value == node.isScrollable();
+                case "editable":
+                    return (boolean) value == node.isEditable();
+                case "multiLine":
+                    return (boolean) value == node.isMultiLine();
+                default:
+                    return false;
+            }
+        }
+
+        return false;
+    }
 
     /**
      * str {string} 控件文本
      * 返回 {UiSelector} 返回选择器自身以便链式调用
      * 为当前选择器附加控件"text 等于字符串 str"的筛选条件。
+     *
      * @param str
      * @return
      */
@@ -110,6 +202,7 @@ public class UiSelector implements IUiSelector{
     /**
      * str {string} 要包含的字符串
      * 为当前选择器附加控件"text 需要包含字符串 str"的筛选条件。
+     *
      * @param str
      * @return
      */
@@ -125,6 +218,7 @@ public class UiSelector implements IUiSelector{
     /**
      * prefix {string} 前缀
      * 为当前选择器附加控件"text 需要以 prefix 开头"的筛选条件。
+     *
      * @param prefix
      * @return
      */
@@ -140,6 +234,7 @@ public class UiSelector implements IUiSelector{
     /**
      * suffix {string} 后缀
      * 为当前选择器附加控件"text 需要以 suffix 结束"的筛选条件。
+     *
      * @param suffix
      * @return
      */
@@ -155,6 +250,7 @@ public class UiSelector implements IUiSelector{
     /**
      * reg {string} | {Regex} 要满足的正则表达式。
      * 为当前选择器附加控件"text 需要满足正则表达式 reg"的条件。
+     *
      * @param reg
      * @return
      */
@@ -171,6 +267,7 @@ public class UiSelector implements IUiSelector{
      * str {string} 控件文本
      * 返回 {UiSelector} 返回选择器自身以便链式调用
      * 为当前选择器附加控件"desc 等于字符串 str"的筛选条件。
+     *
      * @param str
      * @return
      */
@@ -186,6 +283,7 @@ public class UiSelector implements IUiSelector{
     /**
      * str {string} 要包含的字符串
      * 为当前选择器附加控件"desc 需要包含字符串 str"的筛选条件。
+     *
      * @param str
      * @return
      */
@@ -201,6 +299,7 @@ public class UiSelector implements IUiSelector{
     /**
      * prefix {string} 前缀
      * 为当前选择器附加控件"desc 需要以 prefix 开头"的筛选条件。
+     *
      * @param prefix
      * @return
      */
@@ -216,6 +315,7 @@ public class UiSelector implements IUiSelector{
     /**
      * suffix {string} 后缀
      * 为当前选择器附加控件"desc 需要以 suffix 结束"的筛选条件。
+     *
      * @param suffix
      * @return
      */
@@ -231,6 +331,7 @@ public class UiSelector implements IUiSelector{
     /**
      * reg {string} | {Regex} 要满足的正则表达式。
      * 为当前选择器附加控件"desc 需要满足正则表达式 reg"的条件。
+     *
      * @param reg
      * @return
      */
@@ -247,6 +348,7 @@ public class UiSelector implements IUiSelector{
      * resId {string} 控件的 id，以"包名:id/"开头，例如"com.tencent.mm:id/send_btn"。
      * 也可以不指定包名，这时会以当前正在运行的应用的包名来补全 id。例如 id("send_btn"),在 QQ 界面想当于 id("com.tencent.mobileqq:id/send_btn")。
      * 为当前选择器附加"id 等于 resId"的筛选条件。
+     *
      * @param resId
      * @return
      */
@@ -262,6 +364,7 @@ public class UiSelector implements IUiSelector{
     /**
      * str {string} id 要包含的字符串
      * 为当前选择器附加控件"id 包含字符串 str"的筛选条件。比较少用。
+     *
      * @param str
      * @return
      */
@@ -277,6 +380,7 @@ public class UiSelector implements IUiSelector{
     /**
      * prefix {string} id 前缀
      * 为当前选择器附加"id 需要以 prefix 开头"的筛选条件。比较少用。
+     *
      * @param prefix
      * @return
      */
@@ -292,6 +396,7 @@ public class UiSelector implements IUiSelector{
     /**
      * suffix {string} id 后缀
      * 为当前选择器附加"id 需要以 suffix 结束"的筛选条件。比较少用。
+     *
      * @param suffix
      * @return
      */
@@ -307,6 +412,7 @@ public class UiSelector implements IUiSelector{
     /**
      * reg {Regex} | {string} id 要满足的正则表达式
      * 附加 id 需要满足正则表达式。
+     *
      * @param reg
      * @return
      */
@@ -319,13 +425,13 @@ public class UiSelector implements IUiSelector{
         return this;
     }
 
-
     /**
      * str {string} 控件文本
      * 返回 {UiSelector} 返回选择器自身以便链式调用
      * 为当前选择器附加控件"className 等于字符串 str"的筛选条件。
      * 控件的 className(类名)表示一个控件的类别，例如文本控件的类名为 android.widget.TextView。
      * 因为这个比较常用，所以改成了和classNameContains一样的效果，例如文本控件可以直接用className("TextView")的选择器。
+     *
      * @param str
      * @return
      */
@@ -338,10 +444,10 @@ public class UiSelector implements IUiSelector{
         return this;
     }
 
-
     /**
      * str {string} 要包含的字符串
      * 为当前选择器附加控件"className 需要包含字符串 str"的筛选条件。
+     *
      * @param str
      * @return
      */
@@ -357,6 +463,7 @@ public class UiSelector implements IUiSelector{
     /**
      * prefix {string} 前缀
      * 为当前选择器附加控件"className 需要以 prefix 开头"的筛选条件。
+     *
      * @param prefix
      * @return
      */
@@ -372,6 +479,7 @@ public class UiSelector implements IUiSelector{
     /**
      * suffix {string} 后缀
      * 为当前选择器附加控件"className 需要以 suffix 结束"的筛选条件。
+     *
      * @param suffix
      * @return
      */
@@ -387,6 +495,7 @@ public class UiSelector implements IUiSelector{
     /**
      * reg {string} | {Regex} 要满足的正则表达式。
      * 为当前选择器附加控件"className 需要满足正则表达式 reg"的条件。
+     *
      * @param reg
      * @return
      */
@@ -403,6 +512,7 @@ public class UiSelector implements IUiSelector{
      * str {string} 控件文本
      * 返回 {UiSelector} 返回选择器自身以便链式调用
      * 为当前选择器附加控件"packageName 等于字符串 str"的筛选条件。
+     *
      * @param str
      * @return
      */
@@ -418,6 +528,7 @@ public class UiSelector implements IUiSelector{
     /**
      * str {string} 要包含的字符串
      * 为当前选择器附加控件"packageName 需要包含字符串 str"的筛选条件。
+     *
      * @param str
      * @return
      */
@@ -433,6 +544,7 @@ public class UiSelector implements IUiSelector{
     /**
      * prefix {string} 前缀
      * 为当前选择器附加控件"packageName 需要以 prefix 开头"的筛选条件。
+     *
      * @param prefix
      * @return
      */
@@ -448,6 +560,7 @@ public class UiSelector implements IUiSelector{
     /**
      * suffix {string} 后缀
      * 为当前选择器附加控件"packageName 需要以 suffix 结束"的筛选条件。
+     *
      * @param suffix
      * @return
      */
@@ -463,6 +576,7 @@ public class UiSelector implements IUiSelector{
     /**
      * reg {string} | {Regex} 要满足的正则表达式。
      * 为当前选择器附加控件"packageName 需要满足正则表达式 reg"的条件。
+     *
      * @param reg
      * @return
      */
@@ -484,6 +598,7 @@ public class UiSelector implements IUiSelector{
      * 尽管用这个方法定位控件对于静态页面十分准确，却无法兼容不同分辨率的设备；同时对于列表页面等动态页面无法达到效果，因此使用不推荐该选择器。
      * 注意参数的这四个数字不能随意填写，必须精确的填写控件的四个边界才能找到该控件。例如，要点击 QQ 主界面的右上角加号，我们用布局分析查看该控件的属性，如下图：
      * 可以看到 bounds 属性为(951, 67, 1080, 196)，此时使用代码bounds(951, 67, 1080, 196).clickable().click()即可点击该控件。
+     *
      * @param left
      * @param top
      * @param right
@@ -493,27 +608,6 @@ public class UiSelector implements IUiSelector{
     public UiSelector bounds(int left, int top, int right, int bottom) {
         int[] screen = {left, top, right, bottom};
         containsAttributes.put("bounds", screen);
-        return this;
-    }
-
-    /**
-     * left {number} 范围左边缘与屏幕左边的距离
-     * top {number} 范围上边缘与屏幕上边的距离
-     * right {number} 范围右边缘与屏幕左边的距离
-     * bottom {number} 范围下边缘与屏幕上边的距离
-     * 为当前选择器附加控件"bounds 需要在 left, top, right, bottom 构成的范围里面"的条件。
-     * 这个条件用于限制选择器在某一个区域选择控件。例如要在屏幕上半部分寻找文本控件 TextView，代码为:
-     * var w = className("TextView").boundsInside(0, 0, device.width, device.height / 2).findOne();
-     * log(w.text());
-     * @param left
-     * @param top
-     * @param right
-     * @param bottom
-     * @return
-     */
-    public UiSelector boundsInside(int left, int top, int right, int bottom) {
-        int[] screen = {left, top, right, bottom};
-        containsAttributes.put("boundsInside", screen);
         return this;
     }
 
@@ -528,10 +622,33 @@ public class UiSelector implements IUiSelector{
      * top {number} 范围上边缘与屏幕上边的距离
      * right {number} 范围右边缘与屏幕左边的距离
      * bottom {number} 范围下边缘与屏幕上边的距离
+     * 为当前选择器附加控件"bounds 需要在 left, top, right, bottom 构成的范围里面"的条件。
+     * 这个条件用于限制选择器在某一个区域选择控件。例如要在屏幕上半部分寻找文本控件 TextView，代码为:
+     * var w = className("TextView").boundsInside(0, 0, device.width, device.height / 2).findOne();
+     * log(w.text());
+     *
+     * @param left
+     * @param top
+     * @param right
+     * @param bottom
+     * @return
+     */
+    public UiSelector boundsInside(int left, int top, int right, int bottom) {
+        int[] screen = {left, top, right, bottom};
+        containsAttributes.put("boundsInside", screen);
+        return this;
+    }
+
+    /**
+     * left {number} 范围左边缘与屏幕左边的距离
+     * top {number} 范围上边缘与屏幕上边的距离
+     * right {number} 范围右边缘与屏幕左边的距离
+     * bottom {number} 范围下边缘与屏幕上边的距离
      * 为当前选择器附加控件"bounds 需要包含 left, top, right, bottom 构成的范围"的条件。
      * 这个条件用于限制控件的范围必须包含所给定的范围。例如给定一个点(500, 300), 寻找在这个点上的可点击控件的代码为:
      * var w = boundsContains(500, 300, device.width - 500, device.height - 300).clickable().findOne();
      * w.click();
+     *
      * @param left
      * @param top
      * @param right
@@ -544,12 +661,12 @@ public class UiSelector implements IUiSelector{
         return this;
     }
 
-
     /**
      * order {number} 控件在父视图中的绘制顺序
      * 为当前选择器附加控件"drawingOrder 等于 order"的条件。
      * drawingOrder 为一个控件在父控件中的绘制顺序，通常可以用于区分同一层次的控件。
      * 但该属性在 Android 7.0 以上才能使用。
+     *
      * @param order 从 1 开始的
      * @return
      */
@@ -565,6 +682,7 @@ public class UiSelector implements IUiSelector{
      * 需要注意的是，可以省略参数b而表示选择那些可以点击的控件，例如
      * className("ImageView").clickable()表示可以点击的图片控件的条件，
      * className("ImageView").clickable(false)表示不可点击的图片控件的条件。
+     *
      * @param b
      * @return
      */
@@ -573,10 +691,10 @@ public class UiSelector implements IUiSelector{
         return this;
     }
 
-
     /**
      * b {Boolean} 表示控件是否可长按
      * 为当前选择器附加控件是否可长按的条件。
+     *
      * @param b
      * @return
      */
@@ -588,6 +706,7 @@ public class UiSelector implements IUiSelector{
     /**
      * b {Boolean} 表示控件是否可勾选
      * 为当前选择器附加控件是否可勾选的条件。勾选通常是对于勾选框而言的，例如图片多选时左上角通常有一个勾选框。
+     *
      * @param b
      * @return
      */
@@ -600,6 +719,7 @@ public class UiSelector implements IUiSelector{
      * b {Boolean} 表示控件是否被选
      * 为当前选择器附加控件是否已选中的条件。被选中指的是，例如 QQ 聊天界面点击下方的"表情按钮"时，
      * 会出现自己收藏的表情，这时"表情按钮"便处于选中状态，其 selected 属性为 true。
+     *
      * @param b
      * @return
      */
@@ -611,6 +731,7 @@ public class UiSelector implements IUiSelector{
     /**
      * b {Boolean} 表示控件是否已启用
      * 为当前选择器附加控件是否已启用的条件。大多数控件都是启用的状态(enabled 为 true)，处于“禁用”状态通常是灰色并且不可点击。
+     *
      * @param b
      * @return
      */
@@ -625,6 +746,7 @@ public class UiSelector implements IUiSelector{
      * 可以用这个条件来寻找可滑动控件来滑动界面。例如滑动 Auto.js 的脚本列表的代码为:
      * className("android.support.v7.widget.RecyclerView").scrollable().findOne().scrollForward();
      * //或者classNameEndsWith("RecyclerView").scrollable().findOne().scrollForward();
+     *
      * @param b
      * @return
      */
@@ -636,6 +758,7 @@ public class UiSelector implements IUiSelector{
     /**
      * b {Boolean} 表示控件是否可编辑
      * 为当前选择器附加控件是否可编辑的条件。一般来说可编辑的控件为输入框(EditText)，但不是所有的输入框(EditText)都可编辑。
+     *
      * @param b
      * @return
      */
@@ -647,6 +770,7 @@ public class UiSelector implements IUiSelector{
     /**
      * b {Boolean} 表示文本或输入框控件是否是多行显示的
      * 为当前选择器附加控件是否文本或输入框控件是否是多行显示的条件。
+     *
      * @param b
      * @return
      */
@@ -661,6 +785,7 @@ public class UiSelector implements IUiSelector{
      * 如果找不到控件，当屏幕内容发生变化时会重新寻找，直至找到。
      * 需要注意的是，如果屏幕上一直没有出现所描述的控件，则该函数会阻塞，直至所描述的控件出现为止。因此此函数不会返回null。
      * 另外，如果屏幕上有多个满足条件的控件，findOne()采用深度优先搜索(DFS)，会返回该搜索算法找到的第一个控件。注意控件找到的顺序有时会起到作用。
+     *
      * @return
      */
     public UiObject untilFindOne() {
@@ -701,11 +826,12 @@ public class UiSelector implements IUiSelector{
      * var w = id("action_log").untilFindOne(6000);
      * //如果找到控件则点击
      * if(w != null){
-     *     w.click();
+     * w.click();
      * }else{
-     *     //否则提示没有找到
-     *     toast("没有找到日志图标");
+     * //否则提示没有找到
+     * toast("没有找到日志图标");
      * }
+     *
      * @param timeout
      * @return
      */
@@ -725,7 +851,7 @@ public class UiSelector implements IUiSelector{
                 accNodeInfo.recycle(); // 释放
                 printLogMsg("untilFindOne timeout: found", 0);
                 this.containsAttributes = new HashMap<>();
-                printLogMsg("loop_num: " + i,0);
+                printLogMsg("loop_num: " + i, 0);
                 return uiObject;
             }
             timeSleep(10);
@@ -734,7 +860,7 @@ public class UiSelector implements IUiSelector{
                 accNodeInfo.recycle(); // 释放
                 printLogMsg("untilFindOne timeout: not found", 0);
                 this.containsAttributes = new HashMap<>();
-                printLogMsg("loop_num: " + i,0);
+                printLogMsg("loop_num: " + i, 0);
                 return new UiObject();
             }
         }
@@ -746,6 +872,7 @@ public class UiSelector implements IUiSelector{
     /**
      * 返回 UiObject
      * 根据当前的选择器所确定的筛选条件，对屏幕上的控件进行搜索，如果找到符合条件的控件则返回该控件；否则返回null。
+     *
      * @return
      */
     public UiObject findOne() {
@@ -771,6 +898,7 @@ public class UiSelector implements IUiSelector{
     /**
      * 根据当前的选择器所确定的筛选条件，对屏幕上的控件进行搜索，是从传入的accNodeInfo节点树往下找。
      * 如果没有找到符合条件的控件，则返回null。
+     *
      * @param accNodeInfo
      * @return
      */
@@ -798,6 +926,7 @@ public class UiSelector implements IUiSelector{
      * 根据当前的选择器所确定的筛选条件，对屏幕上的控件进行搜索，并返回第 i + 1 个符合条件的控件；
      * 如果没有找到符合条件的控件，或者符合条件的控件个数 < i, 则返回null。
      * 注意这里的控件次序，是搜索算法深度优先搜索(DSF)决定的。
+     *
      * @param i
      * @return
      */
@@ -824,35 +953,6 @@ public class UiSelector implements IUiSelector{
         return null;
     }
 
-    /**
-     * 返回 UiCollection
-     * 根据当前的选择器所确定的筛选条件，对屏幕上的控件进行搜索，找到所有满足条件的控件集合并返回。
-     * 这个搜索只进行一次，并不保证一定会找到，因而会出现返回的控件集合为空的情况。
-     * 不同于findOne()或者findOnce()只找到一个控件并返回一个控件，find()函数会找出所有满足条件的控件并返回一个控件集合。之后可以对控件集合进行操作。
-     * 可以通过 empty()函数判断找到的是否为空。例如：
-     * var c = className("AbsListView").find();
-     * if(c.empty()){
-     *     toast("没找到╭(╯^╰)╮");
-     * }else{
-     *     toast("找到啦");
-     * }
-     * @return
-     */
-    public UiCollection find() {
-        //printLogMsg("Attributes " + this.containsAttributes);
-        Map<String, Object> attributes = this.containsAttributes;
-        UiCollection uiCollection = new UiCollection();
-        if (attributes == null || attributes.isEmpty()) {
-            this.containsAttributes = new HashMap<>();
-            return uiCollection;
-        }
-        AccessibilityNodeInfo accNodeInfo = AccUtils.getRootInActiveMy();
-        depthFirstSearchAll(accNodeInfo, attributes, uiCollection);
-        if (accNodeInfo != null)
-            accNodeInfo.recycle(); // 释放
-        this.containsAttributes = new HashMap<>();
-        return uiCollection;
-    }
     private void depthFirstSearchAll(AccessibilityNodeInfo root, Map<String, Object> attributesMap, UiCollection uiCollection) {
         UiObject uiObject = null;
         int numFlag = 0;
@@ -876,45 +976,45 @@ public class UiSelector implements IUiSelector{
 
     /**
      * 返回 UiCollection
+     * 根据当前的选择器所确定的筛选条件，对屏幕上的控件进行搜索，找到所有满足条件的控件集合并返回。
+     * 这个搜索只进行一次，并不保证一定会找到，因而会出现返回的控件集合为空的情况。
+     * 不同于findOne()或者findOnce()只找到一个控件并返回一个控件，find()函数会找出所有满足条件的控件并返回一个控件集合。之后可以对控件集合进行操作。
+     * 可以通过 empty()函数判断找到的是否为空。例如：
+     * var c = className("AbsListView").find();
+     * if(c.empty()){
+     * toast("没找到╭(╯^╰)╮");
+     * }else{
+     * toast("找到啦");
+     * }
+     *
+     * @return
+     */
+    public UiCollection find() {
+        //printLogMsg("Attributes " + this.containsAttributes);
+        Map<String, Object> attributes = this.containsAttributes;
+        UiCollection uiCollection = new UiCollection();
+        if (attributes == null || attributes.isEmpty()) {
+            this.containsAttributes = new HashMap<>();
+            return uiCollection;
+        }
+        AccessibilityNodeInfo accNodeInfo = AccUtils.getRootInActiveMy();
+        depthFirstSearchAll(accNodeInfo, attributes, uiCollection);
+        if (accNodeInfo != null)
+            accNodeInfo.recycle(); // 释放
+        this.containsAttributes = new HashMap<>();
+        return uiCollection;
+    }
+
+    /**
+     * 返回 UiCollection
      * 根据当前的选择器所确定的筛选条件，对屏幕上的控件进行搜索，直到找到至少一个满足条件的控件为止，并返回所有满足条件的控件集合。
      * 该函数与find()函数的区别在于，该函数永远不会返回空集合；但是，如果屏幕上一直没有出现满足条件的控件，则该函数会保持阻塞。
+     *
      * @return
      */
     private UiCollection untilFind() {
 
         return null;
-    }
-
-    /**
-     * 返回 {Boolean}
-     * 判断屏幕上是否存在控件符合选择器所确定的条件。例如要判断某个文本出现就执行某个动作，可以用：
-     * if(text("某个文本").exists()){
-     *     //要支持的动作
-     * }
-     * @return
-     */
-    public boolean exists() {
-        printLogMsg("Attributes " + this.containsAttributes, 0);
-        Map<String, Object> attributes = this.containsAttributes;
-        if (attributes == null || attributes.isEmpty()) {
-            this.containsAttributes = new HashMap<>();
-            return false;
-        }
-        AccessibilityNodeInfo accNodeInfo = AccUtils.getRootInActiveMy();
-        UiObject uiObject = depthFirstSearch(accNodeInfo, attributes);
-        if (uiObject != null) {
-            printLogMsg("exists: true", 0);
-            accNodeInfo.recycle(); // 释放
-            if (uiObject.exists())
-                uiObject.node.recycle();
-            this.containsAttributes = new HashMap<>();
-            return true;
-        }
-        printLogMsg("exists: false", 0);
-        if (accNodeInfo != null)
-            accNodeInfo.recycle(); // 释放
-        this.containsAttributes = new HashMap<>();
-        return false;
     }
 
     /**
@@ -948,30 +1048,38 @@ public class UiSelector implements IUiSelector{
     }
 
     /**
-     *f {Function} 过滤函数，参数为 UiObject，返回值为 boolean
-     * 为当前选择器附加自定义的过滤条件。
-     * 例如，要找出屏幕上所有文本长度为 10 的文本控件的代码为：
-     * var uc = className("TextView").filter(function(w){
-     *     return w.text().length == 10;
-     * });
+     * 返回 {Boolean}
+     * 判断屏幕上是否存在控件符合选择器所确定的条件。例如要判断某个文本出现就执行某个动作，可以用：
+     * if(text("某个文本").exists()){
+     * //要支持的动作
+     * }
+     *
+     * @return
      */
-    /*public void filter(Greeting greeting) {
-        greet("John", UiSelector::sayHello);
+    public boolean exists() {
+        printLogMsg("Attributes " + this.containsAttributes, 0);
+        Map<String, Object> attributes = this.containsAttributes;
+        if (attributes == null || attributes.isEmpty()) {
+            this.containsAttributes = new HashMap<>();
+            return false;
+        }
+        AccessibilityNodeInfo accNodeInfo = AccUtils.getRootInActiveMy();
+        UiObject uiObject = depthFirstSearch(accNodeInfo, attributes);
+        if (uiObject != null) {
+            printLogMsg("exists: true", 0);
+            accNodeInfo.recycle(); // 释放
+            if (uiObject.exists())
+                uiObject.node.recycle();
+            this.containsAttributes = new HashMap<>();
+            return true;
+        }
+        printLogMsg("exists: false", 0);
+        if (accNodeInfo != null)
+            accNodeInfo.recycle(); // 释放
+        this.containsAttributes = new HashMap<>();
+        return false;
     }
-    private static void sayHello(String name) {
-        System.out.println("Hello, " + name + "!");
-    }
-    interface Greeting {
-        void greet(String name);
-    }
-    private void greet(String name, Greeting greeting) {
-        greeting.greet(name);
-    }*/
 
-    private UiObject findOneBFS() {
-        AccessibilityNodeInfo root = AccUtils.getRootInActiveMy();
-        return breadthFirstSearch(root, this.containsAttributes);
-    }
     // 广度优先算法
     private static UiObject breadthFirstSearch(AccessibilityNodeInfo root, Map<String, Object> attributesMap) {
         Queue<AccessibilityNodeInfo> queue = new LinkedList<>();
@@ -1005,6 +1113,7 @@ public class UiSelector implements IUiSelector{
 
         return null;
     }
+
     // 深度优先算法
     private UiObject depthFirstSearch(AccessibilityNodeInfo root, Map<String, Object> attributesMap) {
         UiObject uiObject = null;
@@ -1033,87 +1142,28 @@ public class UiSelector implements IUiSelector{
         return null;
     }
 
-    private static boolean checkAttribute(AccessibilityNodeInfo node, String key, Object value) {
-        switch (key) {
-            case "text":
-            case "textContains":
-                return String.valueOf(node.getText()).contains(String.valueOf(value));
-            case "textStartsWith":
-                return String.valueOf(node.getText()).startsWith(String.valueOf(value));
-            case "textEndsWith":
-                return String.valueOf(node.getText()).endsWith(String.valueOf(value));
-            case "textMatches":
-                String text = String.valueOf(node.getText());
-                text = text.equals("null") ? "" : text;
-                return text.matches(String.valueOf(value));
-            case "desc":
-            case "descContains":
-                return String.valueOf(node.getContentDescription()).contains(String.valueOf(value));
-            case "descStartsWith":
-                return String.valueOf(node.getContentDescription()).startsWith(String.valueOf(value));
-            case "descEndsWith":
-                return String.valueOf(node.getContentDescription()).endsWith(String.valueOf(value));
-            case "descMatches":
-                String desc = String.valueOf(node.getContentDescription());
-                desc = desc.equals("null") ? "" : desc;
-                return desc.matches(String.valueOf(value));
-            case "id":
-            case "idContains":
-                return String.valueOf(node.getViewIdResourceName()).contains(String.valueOf(value));
-            case "idStartsWith":
-                return String.valueOf(node.getViewIdResourceName()).startsWith(String.valueOf(value));
-            case "idEndsWith":
-                return String.valueOf(node.getViewIdResourceName()).endsWith(String.valueOf(value));
-            case "idMatches":
-                return String.valueOf(node.getViewIdResourceName()).matches(String.valueOf(value));
-            case "className":
-            case "classNameContains":
-                return String.valueOf(node.getClassName()).contains(String.valueOf(value));
-            case "classNameStartsWith":
-                return String.valueOf(node.getClassName()).startsWith(String.valueOf(value));
-            case "classNameEndsWith":
-                return String.valueOf(node.getClassName()).endsWith(String.valueOf(value));
-            case "classNameMatches":
-                return String.valueOf(node.getClassName()).matches(String.valueOf(value));
-            case "packageName":
-            case "packageNameContains":
-                return String.valueOf(node.getPackageName()).contains(String.valueOf(value));
-            case "packageNameStartsWith":
-                return String.valueOf(node.getPackageName()).startsWith(String.valueOf(value));
-            case "packageNameEndsWith":
-                return String.valueOf(node.getPackageName()).endsWith(String.valueOf(value));
-            case "bounds":
-                int[] __value = (int[]) value;
-                Rect _rect = new Rect();
-                node.getBoundsInScreen(_rect);
-                return (__value[0] == _rect.left && __value[1] == _rect.top && __value[2] == _rect.right && __value[3] == _rect.bottom);
-            case "boundsInScreen":
-            case "boundsInside":
-                int[] _value = (int[]) value;
-                Rect rect = new Rect();
-                node.getBoundsInScreen(rect);
-                return (rect.top <= rect.bottom && rect.left <= rect.right) &&
-                (_value[0] <= rect.left && _value[1] <= rect.top && _value[2] >= rect.right && _value[3] >= rect.bottom);
-            case "drawingOrder":
-                return (int) value == node.getDrawingOrder();
-            case "clickable":
-                return (boolean) value == node.isClickable();
-            case "longClickable":
-                return (boolean) value == node.isLongClickable();
-            case "checkable":
-                return (boolean) value == node.isCheckable();
-            case "selected":
-                return (boolean) value == node.isSelected();
-            case "enabled":
-                return (boolean) value == node.isEnabled();
-            case "scrollable":
-                return (boolean) value == node.isScrollable();
-            case "editable":
-                return (boolean) value == node.isEditable();
-            case "multiLine":
-                return (boolean) value == node.isMultiLine();
-            default:
-                return false;
-        }
+    /**
+     * f {Function} 过滤函数，参数为 UiObject，返回值为 boolean
+     * 为当前选择器附加自定义的过滤条件。
+     * 例如，要找出屏幕上所有文本长度为 10 的文本控件的代码为：
+     * var uc = className("TextView").filter(function(w){
+     * return w.text().length == 10;
+     * });
+     */
+    /*public void filter(Greeting greeting) {
+        greet("John", UiSelector::sayHello);
+    }
+    private static void sayHello(String name) {
+        System.out.println("Hello, " + name + "!");
+    }
+    interface Greeting {
+        void greet(String name);
+    }
+    private void greet(String name, Greeting greeting) {
+        greeting.greet(name);
+    }*/
+    private UiObject findOneBFS() {
+        AccessibilityNodeInfo root = AccUtils.getRootInActiveMy();
+        return breadthFirstSearch(root, this.containsAttributes);
     }
 }

@@ -7,6 +7,7 @@ import static top.niunaijun.blackboxa.node.GlobalVariableHolder.tag;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Environment;
 import android.provider.OpenableColumns;
 import android.util.Log;
 
@@ -330,4 +331,20 @@ public class FileUtils {
 
         return outputFile;
     }
+
+
+    public static boolean writeToFileOnSdCard(String fileName, String content) {
+        File file = new File(Environment.getExternalStorageDirectory(), fileName);
+        try (FileOutputStream fileOutputStream = new FileOutputStream(file);
+             BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(fileOutputStream))) {
+            bufferedWriter.write(content);
+            bufferedWriter.flush();
+            return true;
+        } catch (IOException e) {
+            // Handle the exception
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 }

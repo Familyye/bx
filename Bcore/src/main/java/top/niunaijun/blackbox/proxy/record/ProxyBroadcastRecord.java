@@ -20,10 +20,11 @@ public class ProxyBroadcastRecord {
     }
     public static void saveStub(Intent shadow, Intent target, int userId) {
         //Log.d("jianjiao_guangbo", target.getAction() + "|" + userId+"|"+target.getExtras("data"));
-        shadow.putExtra("_B_|_target_", target);
-        shadow.putExtra("_B_|_user_id_", userId);
         if (target.getAction() == "com.jianjiao.test.PDDGUANGBO") {
             Log.d("jianjiao_guangbo333333", target.getAction() + "|" + userId + "|" + target.getStringExtra("data"));
+        } else {
+            shadow.putExtra("_B_|_target_", target);
+            shadow.putExtra("_B_|_user_id_", userId);
         }
     }
 

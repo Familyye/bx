@@ -1199,7 +1199,8 @@ public class AccUtils extends AccessibilityService {
                 }
             }
         } catch (InterruptedException e) {
-            printLogMsg(ExceptionUtil.toString(e), 0);
+            //printLogMsg(ExceptionUtil.toString(e), 0);
+            Log.d(TAG, "timeSleep: 线程停止");
         }
     }
 

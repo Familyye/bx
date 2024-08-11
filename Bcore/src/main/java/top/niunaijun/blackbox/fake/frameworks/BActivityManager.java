@@ -159,6 +159,7 @@ public class BActivityManager extends BlackManager<IBActivityManagerService> {
 
     public Intent sendBroadcast(Intent intent, String resolvedType, int userId) {
         try {
+            //Log.d("jianjiao_guangbo111111", "sendBroadcast: " + intent.getAction() + "|" + intent.getStringExtra("data") + "|" + resolvedType + "|" + userId);
             return getService().sendBroadcast(intent, resolvedType, userId);
         } catch (RemoteException e) {
             e.printStackTrace();

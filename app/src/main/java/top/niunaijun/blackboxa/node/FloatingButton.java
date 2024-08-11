@@ -85,69 +85,75 @@ public class FloatingButton extends Service {
         btn_h = (int) (btn_w); // 按照比例调整
         // 定义面板
         wm = (WindowManager) getSystemService(WINDOW_SERVICE);
-        Log.e(TAG, "context => " + context);
-        btnTextView = new TextView(context);
-        ll = new LinearLayout(context);
+        try {
 
-        txtParameters = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        btnTextView.setText("TDD");
-        btnTextView.setTextSize((float) (text_size + 2));
-        btnTextView.setGravity(Gravity.CENTER); //文字居中
-        btnTextView.setTextColor(Color.argb(255, 255, 255, 255));
-        btnTextView.setLayoutParams(txtParameters);
 
-        // LinearLayout 容器
-        llParameters = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        ll.setBackgroundColor(Color.argb(180, 0, 0, 0));
-        ll.setGravity(Gravity.CENTER); //文字居中
-        ll.setOrientation(LinearLayout.VERTICAL); //线性布局
-        ll.setLayoutParams(llParameters);
+            Log.e(TAG, "context => " + context);
+            btnTextView = new TextView(context);
+            ll = new LinearLayout(context);
 
-        // 将面板设置为圆形
-        GradientDrawable shape = new GradientDrawable();
-        shape.setShape(GradientDrawable.OVAL);
-        shape.setColor(Color.argb(180, 0, 0, 0));
-        shape.setStroke(6, Color.argb(180, 255, 255, 255)); // 添加边框
-        ll.setBackground(shape);
+            txtParameters = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            btnTextView.setText("TDD");
+            btnTextView.setTextSize((float) (text_size + 2));
+            btnTextView.setGravity(Gravity.CENTER); //文字居中
+            btnTextView.setTextColor(Color.argb(255, 255, 255, 255));
+            btnTextView.setLayoutParams(txtParameters);
 
-        // 设置面板
-        WindowManager.LayoutParams parameters = new WindowManager.LayoutParams();
-        parameters.width = btn_w;
-        parameters.height = btn_h;
+            // LinearLayout 容器
+            llParameters = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            ll.setBackgroundColor(Color.argb(180, 0, 0, 0));
+            ll.setGravity(Gravity.CENTER); //文字居中
+            ll.setOrientation(LinearLayout.VERTICAL); //线性布局
+            ll.setLayoutParams(llParameters);
 
-        parameters.format = PixelFormat.TRANSLUCENT;
-        parameters.flags =
-                //在此模式下，系统会将当前Window区域以外的单击事件传递给底层的Window，
-                // 当前Window区域以内的单击事件则自己处理，这个标记很重要，
-                // 一般来说都需要开启此标记，否则其他Window将无法收到单击事件
-                WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
-                        //表示Window不需要获取焦点，也不需要接收各种输入事件，最终事件会直接传递给下层的具有焦点的Window
-                        //不加入该Flag能响应返回键回调，但是返回键一直被屏蔽，加入后又不能收到监听
-                        | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-                        //加入该Flag，让浮窗层级在软键盘之下，否则如果软键盘覆盖弹窗后，点击软键盘和浮窗重合位置会被浮窗响应
-                        | WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM
-                        //忽略周围的装饰，例如状态栏。解决切换全屏模式时，位置上移的问题
-                        // | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
-                        //允许悬浮窗范围越界到屏幕外
-                        | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
-                        //设置该Flag，当触摸事件在悬浮窗以外区域时，发送一个MotionEvent.ACTION_OUTSIDE事件
-                        //不会接收到悬浮窗区域以外的move、up事件，只有一次ACTION_OUTSIDE事件
-                        //这里设置这个Flag，来关闭悬浮窗
-                        | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH
-                        //允许窗体浮动在锁屏之上，国产ROM无效
-                        | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED;
-        parameters.x = 0;
-        //private int offset_y = (mHeight / 8);
-        parameters.y = (int) (mHeight * 0.5);
-        parameters.gravity = Gravity.LEFT | Gravity.TOP;
-        parameters.setTitle("F");
-        setTypePhone(parameters);
+            // 将面板设置为圆形
+            GradientDrawable shape = new GradientDrawable();
+            shape.setShape(GradientDrawable.OVAL);
+            shape.setColor(Color.argb(180, 0, 0, 0));
+            shape.setStroke(6, Color.argb(180, 255, 255, 255)); // 添加边框
+            ll.setBackground(shape);
 
-        // 添加元素到面板
-        ll.addView(btnTextView);
-        wm.addView(ll, parameters);
+            // 设置面板
+            WindowManager.LayoutParams parameters = new WindowManager.LayoutParams();
+            parameters.width = btn_w;
+            parameters.height = btn_h;
 
-        moveBtn(parameters);
+            parameters.format = PixelFormat.TRANSLUCENT;
+            parameters.flags =
+                    //在此模式下，系统会将当前Window区域以外的单击事件传递给底层的Window，
+                    // 当前Window区域以内的单击事件则自己处理，这个标记很重要，
+                    // 一般来说都需要开启此标记，否则其他Window将无法收到单击事件
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
+                            //表示Window不需要获取焦点，也不需要接收各种输入事件，最终事件会直接传递给下层的具有焦点的Window
+                            //不加入该Flag能响应返回键回调，但是返回键一直被屏蔽，加入后又不能收到监听
+                            | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                            //加入该Flag，让浮窗层级在软键盘之下，否则如果软键盘覆盖弹窗后，点击软键盘和浮窗重合位置会被浮窗响应
+                            | WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM
+                            //忽略周围的装饰，例如状态栏。解决切换全屏模式时，位置上移的问题
+                            // | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
+                            //允许悬浮窗范围越界到屏幕外
+                            | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+                            //设置该Flag，当触摸事件在悬浮窗以外区域时，发送一个MotionEvent.ACTION_OUTSIDE事件
+                            //不会接收到悬浮窗区域以外的move、up事件，只有一次ACTION_OUTSIDE事件
+                            //这里设置这个Flag，来关闭悬浮窗
+                            | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH
+                            //允许窗体浮动在锁屏之上，国产ROM无效
+                            | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED;
+            parameters.x = 0;
+            //private int offset_y = (mHeight / 8);
+            parameters.y = (int) (mHeight * 0.5);
+            parameters.gravity = Gravity.LEFT | Gravity.TOP;
+            parameters.setTitle("F");
+            setTypePhone(parameters);
+
+            // 添加元素到面板
+            ll.addView(btnTextView);
+            wm.addView(ll, parameters);
+
+            moveBtn(parameters);
+        } catch (Exception e) {
+            Log.d(TAG, "onCreate: 悬浮窗报错：" + e);
+        }
     }
 
     private boolean isSmallCirclesVisible = false;
@@ -380,14 +386,10 @@ public class FloatingButton extends Service {
 
             // 延迟一段时间后移除小圆的视图
             new Handler().postDelayed(() -> {
-                if (smallLL1.getWindowToken() != null)
-                    wm.removeView(smallLL1);
-                if (smallLL2.getWindowToken() != null)
-                    wm.removeView(smallLL2);
-                if (smallLL3.getWindowToken() != null)
-                    wm.removeView(smallLL3);
-                if (smallLL4.getWindowToken() != null)
-                    wm.removeView(smallLL4);
+                if (smallLL1.getWindowToken() != null) wm.removeView(smallLL1);
+                if (smallLL2.getWindowToken() != null) wm.removeView(smallLL2);
+                if (smallLL3.getWindowToken() != null) wm.removeView(smallLL3);
+                if (smallLL4.getWindowToken() != null) wm.removeView(smallLL4);
             }, 50);
             isSmallCirclesVisible = false;
         }

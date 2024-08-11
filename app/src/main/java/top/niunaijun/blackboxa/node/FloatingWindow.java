@@ -1,6 +1,15 @@
 package top.niunaijun.blackboxa.node;
 
-import static top.niunaijun.blackboxa.node.GlobalVariableHolder.*;
+import static top.niunaijun.blackboxa.node.GlobalVariableHolder.DEV_MODE;
+import static top.niunaijun.blackboxa.node.GlobalVariableHolder.__mHeight;
+import static top.niunaijun.blackboxa.node.GlobalVariableHolder.context;
+import static top.niunaijun.blackboxa.node.GlobalVariableHolder.isOpenFloatWin;
+import static top.niunaijun.blackboxa.node.GlobalVariableHolder.ll;
+import static top.niunaijun.blackboxa.node.GlobalVariableHolder.mHeight;
+import static top.niunaijun.blackboxa.node.GlobalVariableHolder.mWidth;
+import static top.niunaijun.blackboxa.node.GlobalVariableHolder.showMyLog;
+import static top.niunaijun.blackboxa.node.GlobalVariableHolder.tag;
+import static top.niunaijun.blackboxa.node.GlobalVariableHolder.text_size;
 
 import android.app.Service;
 import android.content.BroadcastReceiver;
@@ -200,6 +209,10 @@ public class FloatingWindow extends Service {
         Log.i(TAG, "onCreate FloatingWindow");
         // 定义面板
         wm = (WindowManager) getSystemService(WINDOW_SERVICE);
+        if (context == null) {
+            Log.d(TAG, "创建悬浮窗：context为空");
+            return;
+        }
         sv = new ScrollView(context);
         ll = new LinearLayout(context);
         // LinearLayout 容器

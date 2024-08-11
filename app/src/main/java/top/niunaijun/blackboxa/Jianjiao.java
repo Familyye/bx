@@ -1,6 +1,5 @@
 package top.niunaijun.blackboxa;
 
-import static top.niunaijun.blackboxa.MyGlobalVar.devMode;
 import static top.niunaijun.blackboxa.MyGlobalVar.getGoodsIdForUrl;
 import static top.niunaijun.blackboxa.MyGlobalVar.preferences;
 import static top.niunaijun.blackboxa.MyGlobalVar.taskCount;
@@ -48,10 +47,6 @@ public class Jianjiao {
         //Intent intent = new Intent(context, MyActivity.class);
         //Activity main= GlobalVariableHolder.mainActivity;
         //context.startActivity(intent);
-        if (!devMode) {
-            //非开发者模式下，关闭主页面
-            //main.finish();
-        }
         /*BlackBoxCore core = BlackBoxCore.get();
         mReceiver = new MyBoard();
         // 创建IntentFilter并添加action
@@ -95,6 +90,182 @@ public class Jianjiao {
     }
 
     public static void runScript() {
+
+        Log.d(TAG, "run: 开始运行");
+        isRunning = true;
+        MyGlobalVar.isWait = false;
+        taskCount = 0;
+        TaskBase taskBase = new TaskBase();
+        userId = preferences.getString("userId", "123456");
+        int fkWait = Integer.parseInt(preferences.getString("fkWait", "10"));
+        int taskWait = Integer.parseInt(preferences.getString("taskWait", "3"));
+        String ck = preferences.getString("ck", "");
+        String pid = preferences.getString("pid", "");
+        {
+            thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    /*if (!devMode) {
+                        taskBase._print("非开发模式");
+                        UiObject back = taskBase._text("请描述下您遇到的问题～").findOne();
+                        if (back != null) {
+                            Log.d(TAG, "编辑框: " + back.bounds());
+                        }else{
+                            taskBase._print("未找到编辑框");
+                            Log.d(TAG, "未找到编辑框: " + back.bounds().toString());
+                        }
+                        isRunning = false;
+                    }*/
+                    try {
+                        mainTask:
+                        while (isRunning) {
+                            /*UiObject back = taskBase._text("请描述下您遇到的问题～").findOne();
+                            if (back != null) {
+                                Log.d(TAG, "编辑框: " + back.bounds() + back);
+                            } else {
+                                taskBase._print("未找到编辑框");
+                                Log.d(TAG, "未找到编辑框: " + back.bounds().toString());
+                            }*/
+                            if (MyGlobalVar.isWait) {
+                                taskBase._print("暂停中" + fkWait + "分钟");
+                                taskBase._sleep(1000 * 60 * fkWait);
+                                MyGlobalVar.isWait = false;
+                                continue mainTask;
+                            }
+                            if (!taskBase._activityName().contains("com.xunmeng.pinduoduo")) {
+                                taskBase._print("不在拼多多界面:" + taskBase._activityName());
+                                taskBase._sleep(2000);
+                                continue mainTask;
+                            }
+                            UiObject inputBtn = taskBase._text("请描述下您遇到的问题～").findOne();
+                            if (inputBtn != null && inputBtn.bounds() != null) {
+                                taskBase._print("在聊天界面");
+                            } else {
+                                taskBase._print("等待聊天界面:");
+                                taskBase._sleep(2000);
+                                taskBase._back();
+                                continue mainTask;
+                            }
+                            MyGlobalVar.intent = null;
+                            taskBase._print("开始获取任务");
+                            String goodsId = "";
+                            getTask:
+                            while (isRunning && !MyGlobalVar.isWait) {
+                                String res = HttpUtils.get("http://43.248.118.77:9995/getTask?userId=" + userId);
+                                boolean isNumericAndLengthSix = res.matches("^\\d{6,}$");
+                                if (isNumericAndLengthSix) {
+                                    goodsId = res;
+                                    break getTask;
+                                }
+                            }
+                            if (goodsId.length() < 5) {
+                                continue mainTask;
+                            }
+                            taskBase._print("获取到任务：" + goodsId);
+                            taskBase._print("开始转换");
+                            Log.d(TAG, "————————————————开始转换————————————————");
+                            String url = HttpUtils.transferUrl("https://mobile.yangkeduo.com/goods.html?goods_id=" + goodsId, ck, pid);//"_nano_fp=XpmxXqgonqPol0TynT_9c0XiHnmKFzy_MhbWR4_S; api_uid=CiHxZma0h4h80gEVzuZHAg==; jrpl=XjcuSQ2gpswjEtjblkDoDnEuBinda150; njrpl=XjcuSQ2gpswjEtjblkDoDnEuBinda150; dilx=W6qBTZrzT7gfBF8pALRtG; DDJB_PASS_ID=53d210d50ed751e528d0dc4d33d14406; DDJB_LOGIN_SCENE=0", "1885064_275817387");
+                            Log.d(TAG, "转换完成: 进宝地址：" + url);
+                            taskBase._print("转换完成：" + url);
+                            //url = url.replace("https://mobile.yangkeduo.com", "pinduoduo://com.xunmeng.pinduoduo") + "&launch_by_channel=0";
+                            Log.d(TAG, "————————————————地址加工完成————————————————");
+                            taskBase._print("加工完成：" + url);
+
+                            UiObject inputText = taskBase._className("android.widget.EditText").findOne();
+                            if (inputText != null) {
+                                taskBase._print("聚焦输入框");
+                                inputText.click();
+                                taskBase._sleep(2000);
+                            }
+                            inputText = taskBase._className("android.widget.EditText").findOne();
+                            if (inputText != null) {
+                                taskBase._print("输入链接");
+                                inputText.setText(url);
+                                taskBase._sleep(2000);
+                            }
+                            UiObject sendBtn = taskBase._text("发送").findOne();
+                            if (sendBtn != null) {
+                                taskBase._print("点击发送");
+                                sendBtn.click();
+                                taskBase._sleep(2000);
+                            }
+                            UiObject dizhi = taskBase._text(url).findOne();
+                            if (dizhi != null) {
+                                taskBase._print("点击链接");
+                                dizhi.clickPoint();
+                                taskBase._sleep(5000);
+                            }
+
+                            UiObject yijianlingqu = taskBase._text("一键领取").findOne();
+                            if (yijianlingqu != null) {
+                                taskBase._print("一键领取");
+                                yijianlingqu.click();
+                                if (yijianlingqu != null && yijianlingqu.bounds() != null) {
+                                    taskBase._sleep(3000);
+                                }
+                            }
+                            int i = 0;
+                            waitGoodsInfo:
+                            while (isRunning && !MyGlobalVar.isWait) {
+                                if (MyGlobalVar.getIntentCode() == 9) {
+                                    String goodsString = MyGlobalVar.getIntentData();
+                                    taskBase._print("获取到商品信息：" + goodsString.length());
+                                    try {
+                                        JSONObject jsonObject = new JSONObject(goodsString);
+                                        JSONObject goods = (JSONObject) jsonObject.get("goods");
+                                        String tmpGoodsId = goods.getString("goods_id");
+                                        int status = goods.getInt("status");
+                                        if (status == 5) {
+                                            taskBase._print("任务失败,账号风控");
+                                            MyGlobalVar.intent = null;
+                                            MyGlobalVar.isWait = true;
+                                            continue mainTask;
+                                        }
+                                        if (goodsId.equals(tmpGoodsId)) {
+                                            jsonObject.put("userId", userId);
+                                            taskBase._print("开始上传数据：" + tmpGoodsId);
+                                            String res = HttpUtils.post("http://43.248.118.77:9995/uploadTask", jsonObject.toString());
+                                            taskBase._print("上传数据完成：" + res);
+                                            if (res.contains("成功上传数据")) {
+                                                taskCount++;
+                                            }
+                                            taskBase._print("当前数量：" + taskCount);
+                                            taskBase._sleep(taskWait * 1000);
+                                        } else {
+                                            taskBase._print("任务失败,任务id不匹配:" + tmpGoodsId + "|" + goodsId + "_" + "|" + goodsId.length() + "|" + tmpGoodsId.length());
+                                        }
+                                        continue mainTask;
+                                    } catch (JSONException e) {
+                                        taskBase._print("json解析错误:" + e);
+                                        MyGlobalVar.isWait = true;
+                                        continue mainTask;
+                                    }
+                                }
+                                taskBase._sleep(1000);
+                                if (i > 10) {
+                                    taskBase._print("加载商品失败,10s");
+                                    taskBase._back();
+                                    taskBase._sleep(2000);
+                                    taskBase._back();
+                                    continue mainTask;
+                                }
+                                i++;
+                            }
+                        }
+                        isRunning = false;
+                        taskBase._print("任务已结束");
+                    } catch (Exception e) {
+                        System.out.println("在沉睡中被停止！进入catch，线程的是否处于停止状态：" + Jianjiao.thread.isInterrupted());
+                        isRunning = false;
+                        taskBase._print("任务已结束");
+                    }
+                }
+            });
+        }
+        thread.start();
+    }
+
+    public static void runScript1() {
         Log.d(TAG, "run: 开始运行");
         isRunning = true;
         MyGlobalVar.isWait = false;
@@ -107,7 +278,6 @@ public class Jianjiao {
         String customGoodsId = getGoodsIdForUrl(customUrl);
         String ck = preferences.getString("ck", "");
         String pid = preferences.getString("pid", "");
-
         if (preferences.getBoolean("usejinbao", false)) {
             thread = new Thread(new Runnable() {
                 @Override
@@ -249,8 +419,8 @@ public class Jianjiao {
                                             }
                                         }
                                         Thread.sleep(1000);
-                                        if (i > 20) {
-                                            printLogMsg("加载商品失败,20s");
+                                        if (i > 10) {
+                                            printLogMsg("加载商品失败,10s");
                                             taskBase._back();
                                             Thread.sleep(2000);
                                             taskBase._back();
@@ -272,6 +442,7 @@ public class Jianjiao {
                                     continue;
                                 }
                             } else {
+                                taskBase._print("不在拼多多界面:" + taskBase._activityName());
                                 /*taskBase._print("不在拼多多界面:" + taskBase._activityName());
                                 BlackBoxCore.get().stopPackage("com.xunmeng.pinduoduo", 0);
                                 taskBase._sleep(2000);
@@ -534,11 +705,8 @@ public class Jianjiao {
                 }
             });
         }
-
-
         thread.start();
     }
-
 
     public static void huadong() {
         Log.d(TAG, "run: 开始运行");
@@ -681,4 +849,6 @@ public class Jianjiao {
             return e.toString();
         }
     }
+
+
 }
